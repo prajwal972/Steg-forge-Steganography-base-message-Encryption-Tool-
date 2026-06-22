@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StegoForge v4 — Classified Operations</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Exo+2:wght@300;400;600;700&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#01030e;--bg2:#050a1a;--bg3:#07102a;
+  --panel:rgba(8,20,55,0.6);--panel2:rgba(4,12,38,0.88);
+  --accent:#4d9fff;--accent2:#00cfff;--accent3:#7eb8ff;
+  --gold:#c9a84c;--gold2:#f0d080;--purple:#a78bfa;
+  --danger:#ff4466;--success:#00e5a0;--warn:#ffb347;
+  --text:#d0e4ff;--muted:rgba(180,210,255,0.42);--faint:rgba(180,210,255,0.14);
+  --border:rgba(77,159,255,0.16);--border2:rgba(77,159,255,0.4);
+  --sidebar:268px;
+  --font-display:'Cinzel',serif;--font-body:'Exo 2',sans-serif;--font-mono:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(77,159,255,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(77,159,255,0.022) 1px,transparent 1px);
+  background-size:52px 52px;}
+#aurora{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.ao{position:absolute;border-radius:50%;filter:blur(100px);opacity:.1;animation:drift 20s ease-in-out infinite;}
+.ao1{width:700px;height:700px;background:radial-gradient(#1040dd,transparent);top:-200px;left:-150px;}
+.ao2{width:500px;height:500px;background:radial-gradient(#0044bb,transparent);bottom:-80px;right:-60px;animation-delay:-9s;}
+.ao3{width:320px;height:320px;background:radial-gradient(#4400aa,transparent);top:44%;left:44%;animation-delay:-14s;}
+@keyframes drift{0%,100%{transform:translate(0,0)scale(1);}40%{transform:translate(45px,-35px)scale(1.07);}70%{transform:translate(-25px,45px)scale(.96);}}
+
+.app{display:flex;min-height:100vh;position:relative;z-index:2;}
+
+/* ══ SIDEBAR ══ */
+.sidebar{width:var(--sidebar);min-height:100vh;flex-shrink:0;
+  background:linear-gradient(180deg,rgba(3,8,28,.97),rgba(1,5,18,.97));
+  border-right:1px solid var(--border);display:flex;flex-direction:column;
+  position:fixed;left:0;top:0;bottom:0;z-index:100;backdrop-filter:blur(28px);}
+.logo-wrap{padding:22px 18px 16px;border-bottom:1px solid var(--border);}
+.logo-icon{width:56px;height:56px;margin:0 auto 12px;display:block;}
+.logo-name{font-family:var(--font-display);font-size:16px;font-weight:900;letter-spacing:3px;
+  text-align:center;background:linear-gradient(135deg,var(--accent3),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.logo-ver{font-family:var(--font-mono);font-size:8px;color:var(--faint);text-align:center;
+  letter-spacing:2px;margin-top:3px;}
+.nav{flex:1;padding:12px 8px;overflow-y:auto;}
+.nav-sec{margin-bottom:16px;}
+.nav-sec-lbl{font-family:var(--font-mono);font-size:8px;letter-spacing:3px;
+  color:var(--faint);padding:0 10px;margin-bottom:5px;}
+.nav-btn{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:6px;
+  cursor:pointer;font-family:var(--font-body);font-size:12px;color:var(--muted);
+  border:1px solid transparent;margin-bottom:2px;transition:all .2s;user-select:none;}
+.nav-btn:hover{background:rgba(77,159,255,0.07);color:var(--text);border-color:var(--border);}
+.nav-btn.active{background:rgba(77,159,255,0.13);color:var(--accent);border-color:var(--border2);}
+.nav-btn svg{width:15px;height:15px;opacity:.6;flex-shrink:0;}
+.nav-btn.active svg{opacity:1;}
+.nbadge{margin-left:auto;font-family:var(--font-mono);font-size:8px;
+  padding:1px 6px;border-radius:8px;background:var(--accent);color:#000;}
+.nbadge.purple{background:var(--purple);color:#000;}
+.nav-btn.term-btn{border-color:rgba(0,229,160,0.2);color:var(--success);}
+.nav-btn.term-btn.active{background:rgba(0,229,160,0.1);border-color:rgba(0,229,160,0.4);}
+.sidebar-foot{padding:12px;border-top:1px solid var(--border);}
+.sf-row{display:flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:10px;color:var(--muted);margin-bottom:5px;}
+.sf-dot{width:5px;height:5px;border-radius:50%;background:var(--success);box-shadow:0 0 5px var(--success);animation:blk 2s infinite;}
+@keyframes blk{0%,100%{opacity:1;}50%{opacity:.2;}}
+.logout-btn{width:100%;padding:7px;background:rgba(255,68,102,0.06);border:1px solid rgba(255,68,102,0.2);
+  border-radius:5px;color:rgba(255,68,102,0.7);font-family:var(--font-mono);font-size:9px;
+  letter-spacing:2px;cursor:pointer;transition:all .2s;margin-top:8px;}
+.logout-btn:hover{background:rgba(255,68,102,0.12);color:var(--danger);}
+
+/* ══ MAIN ══ */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;}
+.topbar{height:50px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 26px;border-bottom:1px solid var(--border);
+  background:rgba(1,3,14,.88);backdrop-filter:blur(20px);position:sticky;top:0;z-index:50;}
+.tb-title{font-family:var(--font-display);font-size:12px;letter-spacing:2px;color:var(--accent3);}
+.tb-right{display:flex;align-items:center;gap:16px;}
+.tb-stat{font-family:var(--font-mono);font-size:9px;color:var(--muted);}
+.tb-stat span{color:var(--accent2);}
+#clock{font-family:var(--font-mono);font-size:10px;color:var(--faint);}
+
+/* ══ PAGES ══ */
+.page{display:none;padding:24px;animation:fadeUp .3s ease;}
+.page.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:translateY(0);}}
+.ph{margin-bottom:20px;}
+.ph-title{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:2px;
+  background:linear-gradient(135deg,var(--text),var(--accent3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.ph-sub{font-family:var(--font-mono);font-size:9px;color:var(--muted);margin-top:4px;letter-spacing:1px;}
+
+/* ══ CARD ══ */
+.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;
+  padding:18px;margin-bottom:16px;backdrop-filter:blur(14px);position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.3;}
+.card.purple-card{border-color:rgba(167,139,250,.22);}
+.card.purple-card::before{background:linear-gradient(90deg,transparent,var(--purple),transparent);}
+.card.green-card{border-color:rgba(0,229,160,.22);}
+.card.green-card::before{background:linear-gradient(90deg,transparent,var(--success),transparent);}
+.ctitle{font-family:var(--font-mono);font-size:9px;letter-spacing:3px;color:var(--accent);
+  margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+.ctitle.purple{color:var(--purple);}
+.ctitle.green{color:var(--success);}
+.ctitle::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* ══ GRID ══ */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr;}}
+
+/* ══ UPLOAD ZONE ══ */
+.upz{border:1.5px dashed var(--border2);border-radius:8px;padding:24px 14px;
+  text-align:center;cursor:pointer;transition:all .25s;background:rgba(10,30,70,.22);position:relative;overflow:hidden;}
+.upz:hover,.upz.drag{border-color:var(--accent);background:rgba(18,55,130,.18);}
+.upz-lbl{font-family:var(--font-mono);font-size:10px;color:var(--muted);line-height:1.8;}
+.upz-lbl strong{display:block;font-size:11px;color:var(--text);margin-bottom:3px;}
+input[type=file]{display:none;}
+
+/* ══ FORM ══ */
+.field{margin-bottom:14px;}
+label,lbl{display:block;font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--accent);margin-bottom:6px;}
+label.purple{color:var(--purple);}
+label.green{color:var(--success);}
+input[type=text],input[type=password],textarea,select{
+  width:100%;background:rgba(2,10,32,.85);border:1px solid var(--border);
+  color:var(--text);font-family:var(--font-mono);font-size:11px;
+  padding:9px 12px;border-radius:6px;outline:none;transition:border-color .25s,box-shadow .25s;}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(77,159,255,.08);}
+textarea{min-height:88px;resize:vertical;}
+.pw-wrap{position:relative;}
+.pw-wrap input{padding-right:38px;}
+.eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;padding:3px;}
+.eye:hover{color:var(--accent);}
+.str-track{height:2px;background:rgba(255,255,255,.05);border-radius:2px;margin-top:5px;overflow:hidden;}
+.str-fill{height:100%;width:0;border-radius:2px;transition:all .35s;}
+.entropy{font-family:var(--font-mono);font-size:9px;color:var(--muted);margin-top:4px;}
+.cap-hd{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:9px;color:var(--muted);margin-bottom:4px;}
+.cap-hd span{color:var(--accent2);}
+.cap-track{height:3px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;}
+.cap-fill{height:100%;width:0;border-radius:2px;transition:width .35s;}
+
+/* TOGGLE SWITCH */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;
+  padding:8px 12px;background:rgba(5,14,40,.5);border:1px solid var(--border);
+  border-radius:6px;margin-bottom:6px;font-family:var(--font-mono);font-size:10px;color:var(--muted);}
+.toggle-row:hover{border-color:var(--border2);color:var(--text);}
+.sw{position:relative;display:inline-block;width:34px;height:18px;cursor:pointer;flex-shrink:0;}
+.sw input{opacity:0;width:0;height:0;}
+.sw-track{position:absolute;inset:0;background:rgba(77,159,255,.12);border:1px solid var(--border);
+  border-radius:9px;transition:all .25s;}
+.sw input:checked+.sw-track{background:rgba(77,159,255,.3);border-color:var(--accent);}
+.sw-knob{position:absolute;top:2px;left:2px;width:12px;height:12px;
+  background:var(--muted);border-radius:50%;transition:all .25s;}
+.sw input:checked~.sw-knob,.sw input:checked+.sw-track+.sw-knob{left:18px;background:var(--accent);}
+/* simpler toggle */
+.tog{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.tog-track{width:32px;height:16px;background:rgba(77,159,255,.1);border:1px solid var(--border);
+  border-radius:8px;position:relative;transition:all .25s;flex-shrink:0;}
+.tog-track.on{background:rgba(77,159,255,.28);border-color:var(--accent);}
+.tog-knob{position:absolute;top:2px;left:2px;width:10px;height:10px;
+  background:var(--muted);border-radius:50%;transition:all .25s;}
+.tog-track.on .tog-knob{left:18px;background:var(--accent);}
+
+/* AES SELECTOR */
+.aes-sel{display:flex;gap:6px;margin-bottom:14px;}
+.aes-btn{flex:1;padding:8px;background:rgba(5,14,40,.5);border:1px solid var(--border);
+  border-radius:6px;font-family:var(--font-mono);font-size:10px;color:var(--muted);
+  cursor:pointer;text-align:center;transition:all .2s;}
+.aes-btn.active{background:rgba(77,159,255,.15);border-color:var(--accent);color:var(--accent);}
+
+/* ACCORDION */
+.acc-hd{display:flex;align-items:center;justify-content:space-between;
+  padding:9px 12px;background:rgba(8,20,55,.5);border:1px solid var(--border);
+  border-radius:7px;cursor:pointer;font-family:var(--font-mono);font-size:10px;
+  color:var(--muted);transition:all .2s;margin-bottom:5px;}
+.acc-hd:hover{border-color:var(--border2);color:var(--text);}
+.acc-hd.open{border-color:var(--accent);color:var(--accent);}
+.acc-hd svg{transition:transform .2s;width:12px;height:12px;}
+.acc-hd.open svg{transform:rotate(180deg);}
+.acc-body{display:none;padding:12px;background:rgba(2,8,28,.6);
+  border:1px solid var(--border);border-top:none;border-radius:0 0 7px 7px;margin-top:-5px;margin-bottom:5px;}
+.acc-body.open{display:block;}
+
+/* ══ BUTTONS ══ */
+.btn{width:100%;padding:11px 16px;border-radius:7px;cursor:pointer;
+  font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:3px;
+  transition:all .22s;position:relative;overflow:hidden;border:1px solid;}
+.btn-blue{background:linear-gradient(135deg,rgba(14,48,125,.85),rgba(7,33,85,.85));
+  border-color:var(--accent);color:var(--accent3);}
+.btn-blue:hover{background:linear-gradient(135deg,rgba(28,75,180,.9),rgba(14,52,125,.9));box-shadow:0 0 16px rgba(77,159,255,.25);}
+.btn-red{background:linear-gradient(135deg,rgba(85,7,22,.85),rgba(52,4,14,.85));
+  border-color:var(--danger);color:#ff8899;}
+.btn-red:hover{box-shadow:0 0 16px rgba(255,68,102,.25);}
+.btn-gold{background:linear-gradient(135deg,rgba(65,44,7,.85),rgba(40,28,4,.85));
+  border-color:var(--gold);color:var(--gold2);}
+.btn-gold:hover{box-shadow:0 0 16px rgba(201,168,76,.25);}
+.btn-purple{background:linear-gradient(135deg,rgba(55,28,110,.85),rgba(36,18,75,.85));
+  border-color:var(--purple);color:#c4b5fd;}
+.btn-purple:hover{box-shadow:0 0 16px rgba(167,139,250,.25);}
+.btn-green{background:linear-gradient(135deg,rgba(0,80,50,.85),rgba(0,50,32,.85));
+  border-color:var(--success);color:#6effd0;}
+.btn-green:hover{box-shadow:0 0 16px rgba(0,229,160,.25);}
+.btn-sm{width:auto;padding:6px 12px;font-size:9px;letter-spacing:2px;}
+.btn:disabled{opacity:.3;cursor:not-allowed;}
+.btn.ld{color:transparent!important;}
+.btn.ld::after{content:'';position:absolute;width:13px;height:13px;
+  border:2px solid transparent;border-top-color:var(--accent3);border-radius:50%;
+  animation:spin .7s linear infinite;top:50%;left:50%;transform:translate(-50%,-50%);}
+@keyframes spin{to{transform:translate(-50%,-50%)rotate(360deg);}}
+
+/* ══ OUTPUT ══ */
+.out-sec{display:none;animation:fadeUp .4s ease;}
+.out-sec.on{display:block;}
+.out-img{width:100%;max-height:220px;object-fit:contain;border-radius:7px;border:1px solid var(--border2);}
+.dec-box{background:rgba(0,0,0,.55);border:1px solid var(--border2);border-radius:7px;
+  padding:16px;font-family:var(--font-mono);font-size:12px;color:var(--success);
+  min-height:66px;word-break:break-word;white-space:pre-wrap;line-height:1.6;}
+.cursor{display:inline-block;width:7px;height:13px;background:var(--success);
+  margin-left:2px;animation:blkc 1s step-end infinite;vertical-align:text-bottom;}
+@keyframes blkc{50%{opacity:0;}}
+
+/* ══ ALERT ══ */
+.alert{padding:8px 12px;border-radius:5px;font-family:var(--font-mono);font-size:10px;
+  margin-top:10px;border-left:3px solid;display:none;animation:fadeUp .25s ease;}
+.alert.on{display:block;}
+.alert.ok{border-color:var(--success);color:var(--success);background:rgba(0,229,160,.05);}
+.alert.err{border-color:var(--danger);color:var(--danger);background:rgba(255,68,102,.05);}
+.alert.warn{border-color:var(--warn);color:var(--warn);background:rgba(255,179,71,.05);}
+.alert.info{border-color:var(--purple);color:var(--purple);background:rgba(167,139,250,.05);}
+
+/* ══ STAT CARD ══ */
+.stat{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:14px;}
+.stat-val{font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--accent2);}
+.stat-lbl{font-family:var(--font-mono);font-size:9px;color:var(--muted);margin-top:2px;}
+
+/* ══ PREV ══ */
+.prev{display:none;margin-top:10px;}
+.prev.on{display:block;}
+.prev-img{width:100%;max-height:150px;object-fit:cover;border-radius:6px;border:1px solid var(--border);}
+.prev-meta{font-family:var(--font-mono);font-size:9px;color:var(--muted);margin-top:4px;}
+
+/* ══ PREVIEW GRID ══ */
+.img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:10px;}
+.grid-item{position:relative;border:1px solid var(--border);border-radius:6px;overflow:hidden;cursor:pointer;}
+.grid-item img{width:100%;height:80px;object-fit:cover;display:block;}
+.grid-item-lbl{font-family:var(--font-mono);font-size:9px;color:var(--muted);
+  padding:3px 6px;text-align:center;background:rgba(0,0,0,.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.grid-item-badge{position:absolute;top:4px;right:4px;font-family:var(--font-mono);font-size:8px;
+  padding:1px 5px;border-radius:3px;background:rgba(0,0,0,.75);}
+.grid-item-badge.enc{color:var(--accent);border:1px solid rgba(77,159,255,.3);}
+.grid-item-badge.raw{color:var(--muted);border:1px solid rgba(255,255,255,.1);}
+
+/* ══ LIVE VISUALIZATION CANVAS ══ */
+.vis-wrap{position:relative;border:1px solid var(--border);border-radius:8px;overflow:hidden;
+  background:rgba(0,0,0,.4);}
+.vis-canvas{width:100%;display:block;}
+.vis-controls{display:flex;align-items:center;gap:10px;padding:8px 12px;
+  background:rgba(0,0,0,.3);border-top:1px solid var(--border);flex-wrap:wrap;}
+.vis-label{font-family:var(--font-mono);font-size:9px;color:var(--muted);}
+
+/* ══ PIXEL INSPECTOR ══ */
+.pixel-inspector{background:rgba(0,0,0,.5);border:1px solid var(--border2);border-radius:8px;padding:14px;}
+.px-coord{font-family:var(--font-mono);font-size:10px;color:var(--muted);margin-bottom:10px;}
+.bit-row{display:flex;align-items:center;gap:6px;margin-bottom:6px;}
+.bit-label{font-family:var(--font-mono);font-size:10px;width:16px;color:var(--muted);}
+.bit-block{display:flex;gap:2px;}
+.bit{width:14px;height:14px;border-radius:2px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-size:8px;font-weight:600;}
+.bit-0{background:rgba(77,159,255,.1);border:1px solid rgba(77,159,255,.2);color:var(--muted);}
+.bit-1{background:rgba(0,229,160,.2);border:1px solid rgba(0,229,160,.4);color:var(--success);}
+.bit-lsb{background:rgba(255,179,71,.3);border:2px solid var(--warn);color:var(--warn);}
+.px-color-box{width:36px;height:36px;border-radius:4px;border:2px solid var(--border);flex-shrink:0;}
+.px-hex{font-family:var(--font-mono);font-size:11px;color:var(--text);margin-left:8px;}
+
+/* ══ ENCODE PROGRESS ══ */
+.progress-wrap{margin-top:14px;display:none;}
+.progress-wrap.on{display:block;}
+.prog-step{display:flex;align-items:center;gap:10px;padding:7px 0;font-family:var(--font-mono);font-size:10px;color:var(--muted);}
+.prog-dot{width:8px;height:8px;border-radius:50%;border:1px solid var(--muted);flex-shrink:0;}
+.prog-dot.done{background:var(--success);border-color:var(--success);box-shadow:0 0 6px var(--success);}
+.prog-dot.active{background:var(--accent);border-color:var(--accent);animation:blk 1s infinite;}
+.prog-bar-wrap{height:2px;background:rgba(255,255,255,.05);border-radius:1px;margin-top:4px;overflow:hidden;}
+.prog-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .5s ease;border-radius:1px;}
+
+/* ══ HEATMAP ══ */
+.heatmap-wrap{position:relative;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-top:10px;}
+#heatmap-canvas{width:100%;display:block;}
+
+/* ══ TERMINAL ══ */
+.terminal{background:#000;border:1px solid rgba(0,229,160,.3);border-radius:8px;padding:16px;font-family:var(--font-mono);font-size:12px;}
+.term-out{color:var(--success);min-height:180px;max-height:320px;overflow-y:auto;margin-bottom:10px;line-height:1.8;}
+.term-out::-webkit-scrollbar{width:3px;}
+.term-out::-webkit-scrollbar-thumb{background:rgba(0,229,160,.3);}
+.term-input-row{display:flex;align-items:center;gap:8px;}
+.term-prompt{color:var(--success);font-size:12px;white-space:nowrap;}
+.term-input{flex:1;background:none;border:none;color:var(--success);font-family:var(--font-mono);font-size:12px;outline:none;caret-color:var(--success);}
+.term-line{line-height:1.8;}
+.term-cmd{color:#fff;}
+.term-info{color:var(--accent2);}
+.term-err{color:var(--danger);}
+.term-success{color:var(--success);}
+.term-warn{color:var(--warn);}
+
+/* ══ ATTACK SIM ══ */
+.attack-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.attack-opt{padding:10px;background:rgba(5,14,40,.5);border:1px solid var(--border);
+  border-radius:6px;cursor:pointer;font-family:var(--font-mono);font-size:10px;color:var(--muted);
+  text-align:center;transition:all .2s;}
+.attack-opt:hover,.attack-opt.selected{border-color:var(--danger);color:var(--danger);background:rgba(255,68,102,.07);}
+.attack-result{padding:10px;border-radius:6px;font-family:var(--font-mono);font-size:10px;margin-top:10px;}
+.attack-survived{background:rgba(0,229,160,.07);border:1px solid rgba(0,229,160,.25);color:var(--success);}
+.attack-failed{background:rgba(255,68,102,.07);border:1px solid rgba(255,68,102,.25);color:var(--danger);}
+
+/* ══ ECDH ══ */
+.ecdh-step-box{display:flex;gap:12px;padding:12px;background:rgba(50,20,100,.1);
+  border:1px solid rgba(167,139,250,.18);border-radius:7px;margin-bottom:8px;}
+.es-num{font-family:var(--font-display);font-size:20px;font-weight:900;color:rgba(167,139,250,.2);min-width:26px;}
+.es-title{font-family:var(--font-mono);font-size:10px;color:var(--purple);margin-bottom:3px;}
+.es-desc{font-size:11px;color:var(--muted);line-height:1.5;}
+.key-box{background:rgba(0,0,0,.55);border:1px solid rgba(167,139,250,.22);border-radius:6px;
+  padding:10px;font-family:var(--font-mono);font-size:10px;color:var(--purple);
+  word-break:break-all;max-height:110px;overflow-y:auto;white-space:pre-wrap;}
+.fp-box{font-family:var(--font-mono);font-size:12px;color:var(--success);
+  letter-spacing:2px;padding:8px;background:rgba(0,229,160,.05);
+  border:1px solid rgba(0,229,160,.18);border-radius:6px;text-align:center;margin-top:6px;}
+.secret-box{background:rgba(0,0,0,.6);border:1px solid rgba(0,229,160,.28);border-radius:6px;
+  padding:10px;font-family:var(--font-mono);font-size:10px;color:var(--success);
+  word-break:break-all;letter-spacing:1px;filter:blur(4px);transition:filter .3s;}
+.secret-box:hover{filter:none;}
+
+/* ══ LOG ══ */
+.log-list{max-height:260px;overflow-y:auto;}
+.log-list::-webkit-scrollbar{width:3px;}
+.log-list::-webkit-scrollbar-thumb{background:var(--border2);}
+.log-entry{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-family:var(--font-mono);font-size:10px;}
+.log-entry:last-child{border-bottom:none;}
+.log-time{color:var(--faint);white-space:nowrap;font-size:9px;min-width:52px;}
+.log-dot{width:5px;height:5px;border-radius:50%;margin-top:3px;flex-shrink:0;}
+.log-msg{color:var(--muted);line-height:1.5;}
+.log-msg strong{color:var(--text);}
+.empty{font-family:var(--font-mono);font-size:10px;color:var(--faint);text-align:center;padding:24px;}
+
+/* ══ BADGES ══ */
+.badge-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;}
+.badge{font-family:var(--font-mono);font-size:8px;letter-spacing:1px;
+  padding:2px 8px;border-radius:10px;border:1px solid;}
+.badge-blue{border-color:rgba(77,159,255,.3);color:var(--accent3);}
+.badge-green{border-color:rgba(0,229,160,.3);color:var(--success);}
+.badge-purple{border-color:rgba(167,139,250,.3);color:var(--purple);}
+.badge-gold{border-color:rgba(201,168,76,.3);color:var(--gold2);}
+
+/* ══ HISTORY GRID ══ */
+.hist-item{display:flex;align-items:center;gap:10px;padding:10px;
+  background:rgba(8,20,55,.4);border:1px solid var(--border);border-radius:7px;margin-bottom:7px;}
+.hist-thumb{width:44px;height:44px;object-fit:cover;border-radius:4px;border:1px solid var(--border);flex-shrink:0;}
+.hist-info{flex:1;min-width:0;}
+.hist-name{font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hist-meta{font-family:var(--font-mono);font-size:9px;color:var(--muted);margin-top:2px;}
+.hist-badge{font-family:var(--font-mono);font-size:8px;padding:1px 7px;border-radius:8px;}
+.hist-badge.enc{background:rgba(77,159,255,.1);color:var(--accent);border:1px solid rgba(77,159,255,.2);}
+.hist-badge.dec{background:rgba(0,229,160,.1);color:var(--success);border:1px solid rgba(0,229,160,.2);}
+
+/* ══ SOUND ══ */
+#sound-toggle{position:fixed;bottom:18px;right:18px;z-index:200;
+  background:rgba(5,15,45,.9);border:1px solid var(--border);border-radius:8px;
+  padding:7px 12px;font-family:var(--font-mono);font-size:9px;color:var(--muted);
+  cursor:pointer;letter-spacing:1px;transition:all .2s;}
+#sound-toggle:hover{border-color:var(--accent2);color:var(--accent2);}
+#sound-toggle.on{border-color:var(--success);color:var(--success);}
+
+/* ══ SECURITY TABLE ══ */
+.sec-tbl{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:10px;}
+.sec-tbl td{padding:6px 9px;border-bottom:1px solid var(--border);color:var(--muted);}
+.sec-tbl td:first-child{color:var(--text);}
+.sec-tbl td:last-child{color:var(--success);}
+
+/* ECDH BANNER */
+.ecdh-banner{display:none;margin-bottom:14px;padding:7px 13px;border-radius:6px;
+  font-family:var(--font-mono);font-size:10px;color:var(--purple);
+  background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.25);}
+.ecdh-banner.on{display:block;}
+</style>
+</head>
+<body>
+<div id="aurora"><div class="ao ao1"></div><div class="ao ao2"></div><div class="ao ao3"></div></div>
+
+<div class="app">
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar">
+  <div class="logo-wrap">
+    <svg class="logo-icon" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="28,3 53,16 53,40 28,53 3,40 3,16" fill="rgba(4,16,55,.85)" stroke="#4d9fff" stroke-width="1.5"/>
+      <polygon points="28,9 47,19 47,37 28,47 9,37 9,19" fill="none" stroke="#1a4fbb" stroke-width=".8" opacity=".5"/>
+      <ellipse cx="28" cy="28" rx="12" ry="8" fill="none" stroke="#00cfff" stroke-width="1.5"/>
+      <circle cx="28" cy="28" r="4" fill="#00cfff" style="animation:ep 2.5s ease-in-out infinite"/>
+      <circle cx="28" cy="28" r="7" fill="none" stroke="#00cfff" stroke-width=".8" opacity=".35"/>
+      <style>@keyframes ep{0%,100%{opacity:1;r:4}50%{opacity:.35;r:3}}</style>
+    </svg>
+    <div class="logo-name">STEGOFORGE</div>
+    <div class="logo-ver">V4.0 — CLASSIFIED OPS</div>
+  </div>
+
+  <nav class="nav">
+    <div class="nav-sec">
+      <div class="nav-sec-lbl">KEY EXCHANGE</div>
+      <div class="nav-btn" id="nb-ecdh" onclick="goPage('ecdh',this)">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7.864 4.243A7.5 7.5 0 0119.5 10.5c0 2.92-.556 5.709-1.568 8.268M5.742 6.364A7.465 7.465 0 004.5 10.5a7.464 7.464 0 01-1.15 3.993m1.989 3.559A11.209 11.209 0 008.25 10.5a3.75 3.75 0 117.5 0"/></svg>
+        ECDH Exchange
+        <span class="nbadge purple">P-256</span>
+      </div>
+    </div>
+    <div class="nav-sec">
+      <div class="nav-sec-lbl">OPERATIONS</div>
+      <div class="nav-btn active" id="nb-encode" onclick="goPage('encode',this)">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
+        Encode
+      </div>
+      <div class="nav-btn" id="nb-decode" onclick="goPage('decode',this)">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H3.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
+        Decode
+      </div>
+    </div>
+    <div class="nav-sec">
+      <div class="nav-sec-lbl">INTELLIGENCE</div>
+      <div class="nav-btn" id="nb-viz" onclick="goPage('viz',this)">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Live Visualization
+      </div>
+      <div class="nav-btn" id="nb-analysis" onclick="goPage('analysis',this)">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>
+        Pixel Analysis
+      </div>
+      <div class="nav-btn" id="nb-attack" onclick="goPage('attack',this)">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+        Attack Simulation
+      </div>
+      <div class="nav-btn term-btn" id="nb-terminal" onclick="goPage('terminal',this)">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z"/></svg>
+        Terminal Mode
+      </div>
+    </div>
+    <div class="nav-sec">
+      <div class="nav-sec-lbl">SESSION</div>
+      <div class="nav-btn" id="nb-history" onclick="goPage('history',this)">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Session History
+        <span class="nbadge" id="log-cnt" style="background:var(--accent)">0</span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="sidebar-foot">
+    <div class="sf-row"><div class="sf-dot"></div><span style="color:var(--success)">SYSTEM ONLINE</span></div>
+    <div class="sf-row" style="color:var(--muted)">AGENT: <span style="color:var(--accent2)">{{ username }}</span></div>
+    <div class="sf-row" style="color:var(--faint)" id="s-ops">0 operations</div>
+    <div id="clock" style="font-family:var(--font-mono);font-size:9px;color:var(--faint);margin-top:4px"></div>
+    <button class="logout-btn" onclick="window.location='/logout'">TERMINATE SESSION</button>
+  </div>
+</aside>
+
+<!-- ══ MAIN ══ -->
+<main class="main">
+  <div class="topbar">
+    <div class="tb-title" id="tb-title">ENCODE OPERATION</div>
+    <div class="tb-right">
+      <div class="tb-stat">CURVE: <span>P-256</span></div>
+      <div class="tb-stat">ENC: <span id="tb-aes">AES-256-GCM</span></div>
+      <div class="tb-stat">LSB: <span>ADAPTIVE</span></div>
+      <div id="clock2" style="font-family:var(--font-mono);font-size:10px;color:var(--faint)"></div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: ENCODE ══ -->
+  <div class="page active" id="page-encode">
+    <div class="ph"><div class="ph-title">ENCODE OPERATION</div>
+      <div class="ph-sub">// Encrypt + embed message using adaptive LSB steganography</div></div>
+
+    <div class="ecdh-banner" id="enc-ecdh-banner">ECDH MODE ACTIVE — shared secret loaded as password</div>
+
+    <div class="g2">
+      <!-- LEFT -->
+      <div>
+        <div class="card">
+          <div class="ctitle">COVER IMAGE</div>
+          <div class="upz" id="upz-enc" onclick="document.getElementById('fi-enc').click()">
+            <div class="upz-lbl"><strong>SELECT COVER IMAGE</strong>PNG / JPG / BMP — drag or click</div>
+          </div>
+          <input type="file" id="fi-enc" accept="image/*" multiple>
+          <div class="prev" id="prev-enc">
+            <img class="prev-img" id="pimg-enc" src="" alt="">
+            <div class="prev-meta" id="pmeta-enc"></div>
+          </div>
+          <div class="img-grid" id="enc-grid"></div>
+        </div>
+
+        <div class="card">
+          <div class="ctitle">SECRET MESSAGE</div>
+          <div id="cap-wrap" style="display:none;margin-bottom:12px">
+            <div class="cap-hd"><span>// CAPACITY USED</span><span id="cap-pct">0%</span></div>
+            <div class="cap-track"><div class="cap-fill" id="cap-fill"></div></div>
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--muted);margin-top:3px" id="cap-info"></div>
+          </div>
+          <div class="field">
+            <label>// MESSAGE</label>
+            <textarea id="enc-msg" placeholder="Enter your secret message..." oninput="updateCap()"></textarea>
+          </div>
+          <div id="ai-suggest-box" style="display:none;padding:10px;border:1px solid rgba(167,139,250,.2);
+            border-radius:6px;background:rgba(50,20,100,.1);font-family:var(--font-mono);font-size:10px;color:var(--purple);line-height:1.8;margin-top:8px">
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div>
+        <div class="card">
+          <div class="ctitle">ENCRYPTION KEY</div>
+          <div class="field">
+            <label>// PASSWORD <span id="ecdh-pwd-lbl" style="color:var(--purple);display:none">(ECDH)</span></label>
+            <div class="pw-wrap">
+              <input type="password" id="enc-pwd" placeholder="Strong password or ECDH auto-fill..." oninput="scorePass(this,'sf-enc')">
+              <button class="eye" onclick="toggleEye('enc-pwd',this)">&#128065;</button>
+            </div>
+            <div class="str-track"><div class="str-fill" id="sf-enc"></div></div>
+            <div class="entropy" id="entropy-enc"></div>
+          </div>
+
+          <div class="ctitle" style="margin-top:14px">ENCRYPTION MODE</div>
+          <div class="aes-sel">
+            <div class="aes-btn active" id="aes128" onclick="selectAES(128)">AES-128-GCM<br><span style="font-size:8px;opacity:.6">FAST</span></div>
+            <div class="aes-btn" id="aes256" onclick="selectAES(256)">AES-256-GCM<br><span style="font-size:8px;opacity:.6">MILITARY</span></div>
+          </div>
+
+          <div class="toggle-row">
+            <span>Double Encryption (2x AES layers)</span>
+            <label class="tog" id="tog-double">
+              <div class="tog-track" id="tt-double"></div>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <span>Scrub EXIF Metadata</span>
+            <label class="tog" id="tog-exif">
+              <div class="tog-track on" id="tt-exif"></div>
+            </label>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="ctitle">SECURITY FEATURES</div>
+
+          <div class="acc-hd" id="ah-decoy" onclick="toggleAcc('decoy')">
+            Decoy Password
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </div>
+          <div class="acc-body" id="ab-decoy">
+            <div class="field"><label>// DECOY PASSWORD</label><input type="password" id="enc-dpwd"></div>
+            <div class="field"><label>// FAKE MESSAGE (shown to coercer)</label><textarea id="enc-dmsg" style="min-height:55px"></textarea></div>
+          </div>
+
+          <div class="acc-hd" id="ah-expiry" onclick="toggleAcc('expiry')">
+            Message Expiry
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </div>
+          <div class="acc-body" id="ab-expiry">
+            <div class="field"><label>// DURATION</label>
+              <select id="enc-expiry"><option value="0">Never</option><option value="1">1 hour</option><option value="6">6 hours</option><option value="24">24 hours</option><option value="72">3 days</option><option value="168">7 days</option></select>
+            </div>
+          </div>
+
+          <div class="acc-hd" id="ah-att" onclick="toggleAcc('att')">
+            Self-Destruct Attempts
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </div>
+          <div class="acc-body" id="ab-att">
+            <div class="field"><label>// MAX DECODE ATTEMPTS</label>
+              <select id="enc-att"><option value="0">Unlimited</option><option value="1">1</option><option value="3">3</option><option value="5">5</option><option value="10">10</option></select>
+            </div>
+          </div>
+
+          <button class="btn btn-blue" id="enc-btn" onclick="doEncode()" style="margin-top:10px"><span>ENCODE AND ENCRYPT</span></button>
+
+          <!-- ANIMATED PROGRESS -->
+          <div class="progress-wrap" id="prog-wrap">
+            <div class="prog-bar-wrap"><div class="prog-bar" id="prog-bar"></div></div>
+            <div class="prog-step" id="ps-1"><div class="prog-dot" id="pd-1"></div><span id="pl-1">Deriving encryption key...</span></div>
+            <div class="prog-step" id="ps-2"><div class="prog-dot" id="pd-2"></div><span id="pl-2">Encrypting message...</span></div>
+            <div class="prog-step" id="ps-3"><div class="prog-dot" id="pd-3"></div><span id="pl-3">Embedding bits into pixels...</span></div>
+            <div class="prog-step" id="ps-4"><div class="prog-dot" id="pd-4"></div><span id="pl-4">Finalizing lossless PNG...</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert" id="enc-alert"></div>
+
+    <div class="out-sec" id="enc-out">
+      <div class="card">
+        <div class="ctitle">ENCODED IMAGE READY</div>
+        <div class="g2">
+          <div>
+            <img class="out-img" id="out-img" src="" alt="">
+            <button class="btn btn-gold" style="margin-top:10px" onclick="downloadImg()"><span>DOWNLOAD STEGO IMAGE</span></button>
+          </div>
+          <div>
+            <div class="stat" style="margin-bottom:10px"><div class="stat-val" id="out-pct">0%</div><div class="stat-lbl">CAPACITY USED</div></div>
+            <div class="stat" style="margin-bottom:10px"><div class="stat-val" id="out-dim">—</div><div class="stat-lbl">DIMENSIONS</div></div>
+            <div class="badge-row">
+              <span class="badge badge-blue" id="b-aes">AES-256-GCM</span>
+              <span class="badge badge-blue">ARGON2ID</span>
+              <span class="badge badge-purple" id="b-ecdh" style="display:none">ECDH</span>
+              <span class="badge badge-purple" id="b-double" style="display:none">2x ENCRYPTED</span>
+              <span class="badge badge-green" id="b-decoy" style="display:none">DECOY</span>
+              <span class="badge badge-green" id="b-exif" style="display:none">EXIF CLEAN</span>
+              <span class="badge badge-gold" id="b-exp" style="display:none">EXPIRY SET</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: DECODE ══ -->
+  <div class="page" id="page-decode">
+    <div class="ph"><div class="ph-title">DECODE OPERATION</div>
+      <div class="ph-sub">// Extract and decrypt hidden message from stego image</div></div>
+
+    <div class="ecdh-banner" id="dec-ecdh-banner">ECDH MODE — shared secret auto-loaded</div>
+
+    <div class="g2">
+      <div class="card">
+        <div class="ctitle">STEGO IMAGE</div>
+        <div class="upz" id="upz-dec" onclick="document.getElementById('fi-dec').click()">
+          <div class="upz-lbl"><strong>DROP STEGO PNG HERE</strong>Must be the lossless PNG output</div>
+        </div>
+        <input type="file" id="fi-dec" accept="image/*">
+        <div class="prev" id="prev-dec"><img class="prev-img" id="pimg-dec" src="" alt=""><div class="prev-meta" id="pmeta-dec"></div></div>
+      </div>
+      <div class="card">
+        <div class="ctitle">DECRYPTION KEY</div>
+        <div class="field">
+          <label>// PASSWORD <span id="ecdh-dec-lbl" style="color:var(--purple);display:none">(ECDH)</span></label>
+          <div class="pw-wrap">
+            <input type="password" id="dec-pwd" placeholder="Real password, decoy, or ECDH...">
+            <button class="eye" onclick="toggleEye('dec-pwd',this)">&#128065;</button>
+          </div>
+        </div>
+        <button class="btn btn-red" id="dec-btn" onclick="doDecode()"><span>EXTRACT AND DECRYPT</span></button>
+      </div>
+    </div>
+    <div class="alert" id="dec-alert"></div>
+    <div class="out-sec" id="dec-out">
+      <div class="card">
+        <div class="ctitle">DECRYPTED MESSAGE</div>
+        <div id="decoy-warn" style="display:none;font-family:var(--font-mono);font-size:10px;color:var(--warn);
+          background:rgba(255,179,71,.07);border:1px solid rgba(255,179,71,.25);border-radius:6px;padding:8px 12px;margin-bottom:10px">
+          DECOY PASSWORD USED — attacker sees this fake message
+        </div>
+        <div class="dec-box"><span id="dec-text"></span><span class="cursor"></span></div>
+        <div id="dec-expiry" style="font-family:var(--font-mono);font-size:9px;color:var(--warn);margin-top:6px;display:none"></div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn btn-blue btn-sm" onclick="copyDecoded()"><span>COPY</span></button>
+          <button class="btn btn-sm" style="border-color:var(--border);color:var(--muted)" onclick="clearDec()"><span>CLEAR</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: LIVE VISUALIZATION ══ -->
+  <div class="page" id="page-viz">
+    <div class="ph"><div class="ph-title">LIVE STEGANOGRAPHY VISUALIZATION</div>
+      <div class="ph-sub">// Real-time pixel-level view of LSB changes + bit inspector</div></div>
+    <div class="g2">
+      <div>
+        <div class="card">
+          <div class="ctitle">UPLOAD IMAGE TO INSPECT</div>
+          <div class="upz" id="upz-viz" onclick="document.getElementById('fi-viz').click()">
+            <div class="upz-lbl"><strong>DROP IMAGE HERE</strong>Click any pixel to inspect RGB + LSB values</div>
+          </div>
+          <input type="file" id="fi-viz" accept="image/*">
+          <div class="vis-wrap" id="vis-wrap" style="display:none;margin-top:10px">
+            <canvas id="vis-canvas" class="vis-canvas" style="cursor:crosshair;max-height:260px"></canvas>
+            <div class="vis-controls">
+              <span class="vis-label">SHOW HIDDEN BITS:</span>
+              <label class="tog" onclick="toggleViz('bits')"><div class="tog-track" id="tt-bits"></div></label>
+              <span class="vis-label" style="margin-left:8px">DIFF HEATMAP:</span>
+              <label class="tog" onclick="toggleViz('heat')"><div class="tog-track" id="tt-heat"></div></label>
+              <button class="btn btn-blue btn-sm" style="margin-left:auto" onclick="resetViz()"><span>RESET</span></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="heatmap-card" style="display:none">
+          <div class="ctitle">DIFFERENCE HEATMAP</div>
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--muted);margin-bottom:8px">
+            Bright = modified pixels. Pure steganography should be near-invisible.
+          </div>
+          <canvas id="heatmap-canvas"></canvas>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div class="ctitle">BIT-LEVEL PIXEL INSPECTOR</div>
+          <div class="pixel-inspector" id="px-inspector">
+            <div class="px-coord" id="px-coord">Click on the image to inspect a pixel</div>
+            <div id="px-content" style="display:none">
+              <div style="display:flex;align-items:center;margin-bottom:12px">
+                <div class="px-color-box" id="px-color"></div>
+                <span class="px-hex" id="px-hex"></span>
+              </div>
+              <div class="bit-row">
+                <div class="bit-label" style="color:#ff6688">R</div>
+                <div class="bit-block" id="bits-r"></div>
+              </div>
+              <div class="bit-row">
+                <div class="bit-label" style="color:#44cc88">G</div>
+                <div class="bit-block" id="bits-g"></div>
+              </div>
+              <div class="bit-row">
+                <div class="bit-label" style="color:#4499ff">B</div>
+                <div class="bit-block" id="bits-b"></div>
+              </div>
+              <div style="font-family:var(--font-mono);font-size:9px;color:var(--warn);margin-top:10px">
+                Highlighted last bit = LSB (carries hidden data)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="ctitle">AI IMAGE SUGGESTION</div>
+          <button class="btn btn-purple btn-sm" onclick="runAISuggest()"><span>ANALYZE IMAGE</span></button>
+          <div id="ai-result" style="display:none;margin-top:12px;font-family:var(--font-mono);font-size:10px;line-height:1.8;color:var(--muted)"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: ANALYSIS ══ -->
+  <div class="page" id="page-analysis">
+    <div class="ph"><div class="ph-title">PIXEL ANALYSIS</div>
+      <div class="ph-sub">// LSB histogram + EXIF metadata scrubber</div></div>
+    <div class="g2">
+      <div class="card">
+        <div class="ctitle">LSB HISTOGRAM</div>
+        <div class="upz" id="upz-an" onclick="document.getElementById('fi-an').click()">
+          <div class="upz-lbl"><strong>DROP IMAGE HERE</strong>Analyze R/G/B LSB distribution</div>
+        </div>
+        <input type="file" id="fi-an" accept="image/*">
+        <button class="btn btn-blue btn-sm" style="margin-top:10px" id="an-btn" onclick="runHistogram()"><span>RUN ANALYSIS</span></button>
+        <div class="out-sec" id="an-out" style="margin-top:12px">
+          <canvas id="hist-canvas" height="140" style="width:100%;border-radius:6px"></canvas>
+          <div id="an-verdict" style="font-family:var(--font-mono);font-size:10px;line-height:1.7;
+            padding:9px;border-radius:6px;border:1px solid var(--border);background:rgba(0,0,0,.3);margin-top:8px"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ctitle green">EXIF METADATA SCRUBBER</div>
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--muted);margin-bottom:14px;line-height:1.7">
+          Remove GPS location, camera model, timestamps and all forensic traces from image metadata.
+        </div>
+        <div class="upz" id="upz-exif" onclick="document.getElementById('fi-exif').click()">
+          <div class="upz-lbl"><strong>DROP IMAGE FOR SCRUBBING</strong>Clean forensic traces</div>
+        </div>
+        <input type="file" id="fi-exif" accept="image/*">
+        <button class="btn btn-green btn-sm" style="margin-top:10px" id="exif-btn" onclick="runExifScrub()"><span>SCRUB METADATA</span></button>
+        <div class="alert" id="exif-alert"></div>
+        <div id="exif-out" style="display:none;margin-top:12px">
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--success);margin-bottom:8px" id="exif-result"></div>
+          <button class="btn btn-green btn-sm" onclick="downloadExif()"><span>DOWNLOAD CLEAN IMAGE</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: ATTACK SIMULATION ══ -->
+  <div class="page" id="page-attack">
+    <div class="ph"><div class="ph-title">ATTACK SIMULATION</div>
+      <div class="ph-sub">// Test if hidden message survives real-world attacks</div></div>
+    <div class="g2">
+      <div class="card">
+        <div class="ctitle">STEGO IMAGE + PASSWORD</div>
+        <div class="upz" id="upz-atk" onclick="document.getElementById('fi-atk').click()">
+          <div class="upz-lbl"><strong>UPLOAD ENCODED IMAGE</strong>PNG output from encode operation</div>
+        </div>
+        <input type="file" id="fi-atk" accept="image/*">
+        <div class="prev" id="prev-atk"><img class="prev-img" id="pimg-atk" src="" alt=""></div>
+        <div class="field" style="margin-top:12px">
+          <label>// DECODE PASSWORD (to test survival)</label>
+          <input type="password" id="atk-pwd" placeholder="Password used during encoding...">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ctitle">SELECT ATTACK TYPE</div>
+        <div class="attack-btns">
+          <div class="attack-opt selected" id="atk-jpeg" onclick="selectAtk('jpeg',this)">JPEG COMPRESSION<br><span style="font-size:9px;opacity:.6">quality=75</span></div>
+          <div class="attack-opt" id="atk-crop" onclick="selectAtk('crop',this)">CENTER CROP<br><span style="font-size:9px;opacity:.6">87.5% retained</span></div>
+          <div class="attack-opt" id="atk-noise" onclick="selectAtk('noise',this)">RANDOM NOISE<br><span style="font-size:9px;opacity:.6">+-5 per channel</span></div>
+          <div class="attack-opt" id="atk-resize" onclick="selectAtk('resize',this)">RESIZE ATTACK<br><span style="font-size:9px;opacity:.6">50% down + up</span></div>
+        </div>
+        <button class="btn btn-red" id="atk-btn" onclick="runAttack()"><span>LAUNCH ATTACK SIMULATION</span></button>
+        <div class="alert" id="atk-alert"></div>
+        <div id="atk-result" style="display:none;margin-top:12px">
+          <div id="atk-verdict" class="attack-result"></div>
+          <img id="atk-img" style="width:100%;max-height:160px;object-fit:contain;border-radius:6px;border:1px solid var(--border);margin-top:10px" src="" alt="">
+          <button class="btn btn-gold btn-sm" style="margin-top:8px" onclick="downloadAtk()"><span>DOWNLOAD ATTACKED IMAGE</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: TERMINAL ══ -->
+  <div class="page" id="page-terminal">
+    <div class="ph"><div class="ph-title">TERMINAL MODE</div>
+      <div class="ph-sub">// Command-line interface for advanced operations</div></div>
+    <div class="card green-card">
+      <div class="ctitle green">STEGOFORGE TERMINAL</div>
+      <div class="terminal">
+        <div class="term-out" id="term-out"></div>
+        <div class="term-input-row">
+          <span class="term-prompt">stegoforge &gt;&nbsp;</span>
+          <input class="term-input" id="term-input" type="text" placeholder="Type 'help' for commands..."
+            onkeydown="handleTermKey(event)" autocomplete="off" spellcheck="false">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: ECDH ══ -->
+  <div class="page" id="page-ecdh">
+    <div class="ph"><div class="ph-title">ECDH KEY EXCHANGE</div>
+      <div class="ph-sub">// Elliptic Curve P-256 — zero password transmission</div></div>
+    <div class="g2">
+      <div>
+        <div class="card purple-card">
+          <div class="ctitle purple">STEP 1 — GENERATE KEYPAIR</div>
+          <div class="ecdh-step-box"><div class="es-num">01</div><div><div class="es-title">GENERATE YOUR P-256 KEYPAIR</div><div class="es-desc">Private key stays on your device. Share the public key freely.</div></div></div>
+          <button class="btn btn-purple" id="gen-btn" onclick="genKeys()"><span>GENERATE P-256 KEYPAIR</span></button>
+          <div class="alert" id="gen-alert"></div>
+          <div id="gen-out" style="display:none;margin-top:14px">
+            <div class="field"><label class="purple">// YOUR PUBLIC KEY (safe to share)</label>
+              <div class="key-box" id="pub-key"></div>
+              <div class="fp-box" id="pub-fp"></div>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <button class="btn btn-purple btn-sm" onclick="dlKey('public')"><span>DOWNLOAD PUBLIC KEY</span></button>
+                <button class="btn btn-sm" style="border-color:var(--border);color:var(--muted)" onclick="copyEl('pub-key')"><span>COPY</span></button>
+              </div>
+            </div>
+            <div class="field"><label class="purple">// PRIVATE KEY — hover to reveal — NEVER share</label>
+              <div class="key-box" id="priv-key" style="filter:blur(4px);color:var(--warn);transition:filter .3s"
+                onmouseenter="this.style.filter='none'" onmouseleave="this.style.filter='blur(4px)'"></div>
+              <button class="btn btn-gold btn-sm" style="margin-top:8px" onclick="dlKey('private')"><span>DOWNLOAD PRIVATE KEY</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card purple-card">
+          <div class="ctitle purple">STEP 2 — LOAD PARTNER KEY</div>
+          <div class="ecdh-step-box"><div class="es-num">02</div><div><div class="es-title">UPLOAD THEIR PUBLIC KEY</div><div class="es-desc">Safe to receive over any channel. Verify fingerprint verbally.</div></div></div>
+          <div class="upz" id="upz-partner" onclick="document.getElementById('fi-partner').click()">
+            <div class="upz-lbl"><strong>DROP .pem FILE HERE</strong>Their public key file</div>
+          </div>
+          <input type="file" id="fi-partner" accept=".pem,.txt">
+          <div id="partner-fp-wrap" style="display:none;margin-top:10px">
+            <div class="fp-box" id="partner-fp"></div>
+          </div>
+          <div class="alert" id="partner-alert"></div>
+        </div>
+
+        <div class="card purple-card">
+          <div class="ctitle purple">STEP 3 — DERIVE SHARED SECRET</div>
+          <div class="ecdh-step-box"><div class="es-num">03</div><div><div class="es-title">COMPUTE LOCALLY</div><div class="es-desc">Math runs on your device. The secret never leaves. Auto-loads as AES password.</div></div></div>
+          <button class="btn btn-purple" id="derive-btn" onclick="deriveSecret()"><span>COMPUTE SHARED SECRET</span></button>
+          <div class="alert" id="derive-alert"></div>
+          <div id="derive-out" style="display:none;margin-top:12px">
+            <label class="purple">// SHARED SECRET — hover to reveal</label>
+            <div class="secret-box" id="secret-box"></div>
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--success);margin-top:6px">Auto-loaded into Encode + Decode tabs</div>
+            <div class="badge-row" style="margin-top:8px">
+              <span class="badge badge-purple">ECDH P-256</span>
+              <span class="badge badge-green">HKDF-SHA256</span>
+              <span class="badge badge-blue">32-BYTE KEY</span>
+              <span class="badge badge-green">NEVER TRANSMITTED</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: HISTORY ══ -->
+  <div class="page" id="page-history">
+    <div class="ph"><div class="ph-title">SESSION HISTORY</div>
+      <div class="ph-sub">// All operations performed this session</div></div>
+    <div class="g3" style="margin-bottom:16px">
+      <div class="stat"><div class="stat-val" id="s-total">0</div><div class="stat-lbl">TOTAL OPS</div></div>
+      <div class="stat"><div class="stat-val" id="s-enc">0</div><div class="stat-lbl">ENCODES</div></div>
+      <div class="stat"><div class="stat-val" id="s-dec">0</div><div class="stat-lbl">DECODES</div></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">OPERATION RECORDS</div>
+      <div id="hist-list"><div class="empty">No operations yet.</div></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">ACTIVITY LOG</div>
+      <div class="log-list" id="log-list"><div class="empty">No activity yet.</div></div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<!-- SOUND TOGGLE -->
+<div id="sound-toggle" onclick="toggleSound()" title="Toggle sound effects">SFX: OFF</div>
+
+<script>
+/* ════════════════════════════════
+   GLOBALS
+════════════════════════════════ */
+let encFile=null,decFile=null,anFile=null,exifFile=null,atkFile=null,vizFile=null;
+let outputB64=null,exifB64=null,atkB64=null,vizOrigData=null;
+let myKeypair=null,partnerPem=null,sharedHex=null;
+let selectedAES=256,doubleEnc=false,exifScrub=true,selectedAtk='jpeg';
+let stats={total:0,enc:0,dec:0};
+let logs=[],history_=[];
+let soundOn=false;
+const titles={encode:'ENCODE OPERATION',decode:'DECODE OPERATION',viz:'LIVE VISUALIZATION',
+  analysis:'PIXEL ANALYSIS',attack:'ATTACK SIMULATION',terminal:'TERMINAL MODE',
+  ecdh:'ECDH KEY EXCHANGE',history:'SESSION HISTORY'};
+
+/* AudioContext for sound effects */
+let audioCtx=null;
+function getAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+function beep(freq=440,dur=0.08,type='sine'){
+  if(!soundOn)return;
+  try{const a=getAudio();const o=a.createOscillator();const g=a.createGain();
+  o.connect(g);g.connect(a.destination);o.type=type;o.frequency.value=freq;
+  g.gain.setValueAtTime(0.12,a.currentTime);g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+dur);
+  o.start();o.stop(a.currentTime+dur);}catch(e){}}
+function clickSound(){beep(800,0.04,'square');}
+function successSound(){beep(523,.1);setTimeout(()=>beep(659,.1),120);setTimeout(()=>beep(784,.15),240);}
+function errorSound(){beep(200,.3,'sawtooth');}
+function encodeSound(){
+  [440,494,523,587,659].forEach((f,i)=>setTimeout(()=>beep(f,.08,'square'),i*80));
+}
+
+function toggleSound(){
+  soundOn=!soundOn;
+  const el=document.getElementById('sound-toggle');
+  el.textContent='SFX: '+(soundOn?'ON':'OFF');
+  el.classList.toggle('on',soundOn);
+  if(soundOn)clickSound();
+}
+
+/* ════ CLOCK ════ */
+setInterval(()=>{
+  const n=new Date();
+  const t=[n.getHours(),n.getMinutes(),n.getSeconds()].map(x=>String(x).padStart(2,'0')).join(':');
+  document.getElementById('clock').textContent=t;
+  document.getElementById('clock2').textContent=t+' UTC';
+},1000);
+
+/* ════ NAV ════ */
+function goPage(id,el){
+  clickSound();
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(el)el.classList.add('active');
+  else document.getElementById('nb-'+id)?.classList.add('active');
+  document.getElementById('tb-title').textContent=titles[id]||id.toUpperCase();
+  if(id==='terminal')setTimeout(()=>document.getElementById('term-input').focus(),100);
+}
+
+/* ════ ACCORDION ════ */
+function toggleAcc(id){
+  clickSound();
+  document.getElementById('ah-'+id).classList.toggle('open');
+  document.getElementById('ab-'+id).classList.toggle('open');
+}
+
+/* ════ TOGGLES ════ */
+function initToggle(id,defaultOn,cb){
+  const el=document.getElementById('tt-'+id);
+  if(defaultOn)el.classList.add('on');
+  el.parentElement.addEventListener('click',()=>{
+    el.classList.toggle('on');clickSound();if(cb)cb(el.classList.contains('on'));});
+}
+initToggle('double',false,v=>{doubleEnc=v;});
+initToggle('exif',true,v=>{exifScrub=v;});
+initToggle('bits',false,v=>{if(vizFile)renderViz();});
+initToggle('heat',false,v=>{document.getElementById('heatmap-card').style.display=v?'block':'none';if(v&&vizFile)renderHeatmap();});
+
+/* ════ AES SELECT ════ */
+function selectAES(bits){
+  clickSound();
+  selectedAES=bits;
+  document.getElementById('aes128').classList.toggle('active',bits===128);
+  document.getElementById('aes256').classList.toggle('active',bits===256);
+  document.getElementById('tb-aes').textContent='AES-'+bits+'-GCM';
+}
+selectAES(256);
+
+/* ════ EYE TOGGLE ════ */
+function toggleEye(id,btn){
+  const i=document.getElementById(id);
+  i.type=i.type==='password'?'text':'password';
+  btn.innerHTML=i.type==='password'?'&#128065;':'&#128584;';
+}
+
+/* ════ PASSWORD SCORE ════ */
+function scorePass(inp,barId){
+  const v=inp.value;let s=0;
+  if(v.length>=8)s++;if(v.length>=14)s++;if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;if(/[^a-zA-Z0-9]/.test(v))s++;
+  const b=document.getElementById(barId);
+  b.style.width=(s/5*100)+'%';
+  b.style.background=s<2?'var(--danger)':s<4?'var(--warn)':'var(--success)';
+  const labels=['','VERY WEAK','WEAK','MODERATE','STRONG','MILITARY GRADE'];
+  const eid=barId.replace('sf-','entropy-');
+  const el=document.getElementById(eid);
+  if(el){
+    const entropy=v.length*Math.log2(v.match(/[a-z]/)?26:0+v.match(/[A-Z]/)?26:0+v.match(/[0-9]/)?10:0+v.match(/[^a-zA-Z0-9]/)?32:0||1);
+    el.textContent=`Entropy: ~${Math.round(entropy)} bits — ${labels[s]||''}`;
+    el.style.color=s<2?'var(--danger)':s<4?'var(--warn)':'var(--success)';
+  }
+}
+
+/* ════ ALERTS ════ */
+function showAlert(id,msg,type='ok'){const e=document.getElementById(id);e.textContent=msg;e.className='alert on '+type;}
+function hideAlert(id){document.getElementById(id).className='alert';}
+
+/* ════ LOG ════ */
+function addLog(msg,type='info'){
+  const now=new Date();
+  const t=[now.getHours(),now.getMinutes(),now.getSeconds()].map(x=>String(x).padStart(2,'0')).join(':');
+  logs.unshift({msg,type,t});if(logs.length>80)logs.pop();
+  stats.total++;
+  document.getElementById('log-cnt').textContent=logs.length;
+  document.getElementById('s-total').textContent=stats.total;
+  document.getElementById('s-ops').textContent=`${stats.total} operation${stats.total!==1?'s':''}`;
+  const colors={info:'var(--accent2)',ok:'var(--success)',err:'var(--danger)',warn:'var(--warn)',ecdh:'var(--purple)'};
+  document.getElementById('log-list').innerHTML=logs.map(l=>`
+    <div class="log-entry">
+      <span class="log-time">${l.t}</span>
+      <div class="log-dot" style="background:${colors[l.type]||colors.info}"></div>
+      <span class="log-msg">${l.msg}</span>
+    </div>`).join('');
+}
+
+function addHistory(type,name,info,src){
+  history_.unshift({type,name,info,src,time:new Date().toLocaleTimeString()});
+  if(type==='enc')stats.enc++;else if(type==='dec')stats.dec++;
+  document.getElementById('s-enc').textContent=stats.enc;
+  document.getElementById('s-dec').textContent=stats.dec;
+  document.getElementById('hist-list').innerHTML=history_.map(h=>`
+    <div class="hist-item">
+      ${h.src?`<img class="hist-thumb" src="${h.src}" alt="">`:'<div class="hist-thumb" style="background:var(--panel2);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:9px;color:var(--faint)">IMG</div>'}
+      <div class="hist-info">
+        <div class="hist-name">${h.name}</div>
+        <div class="hist-meta">${h.time} — ${h.info}</div>
+      </div>
+      <span class="hist-badge ${h.type}">${h.type.toUpperCase()}</span>
+    </div>`).join('');
+}
+
+/* ════ FILE DROPS ════ */
+function setupDrop(zoneId,inputId,cb){
+  const z=document.getElementById(zoneId);
+  z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('drag');});
+  z.addEventListener('dragleave',()=>z.classList.remove('drag'));
+  z.addEventListener('drop',e=>{e.preventDefault();z.classList.remove('drag');
+    if(e.dataTransfer.files[0])cb(e.dataTransfer.files[0]);});
+  document.getElementById(inputId).addEventListener('change',e=>{
+    if(e.target.files[0])cb(e.target.files[0]);});
+}
+
+function showPrev(file,imgId,metaId,wrapId){
+  const r=new FileReader();
+  r.onload=e=>{
+    document.getElementById(imgId).src=e.target.result;
+    document.getElementById(wrapId).classList.add('on');
+    const i=new Image();i.onload=()=>{
+      document.getElementById(metaId).textContent=`${i.width}x${i.height} — ${(file.size/1024).toFixed(1)}KB — ${file.name}`;
+    };i.src=e.target.result;
+  };r.readAsDataURL(file);
+}
+
+/* Encode - supports multiple files (grid) */
+document.getElementById('fi-enc').addEventListener('change',e=>{
+  const files=Array.from(e.target.files);
+  if(!files.length)return;
+  encFile=files[0];
+  showPrev(files[0],'pimg-enc','pmeta-enc','prev-enc');
+  // Build preview grid for multiple
+  if(files.length>1){
+    const grid=document.getElementById('enc-grid');
+    grid.innerHTML='';
+    files.forEach((f,i)=>{
+      const r=new FileReader();r.onload=ev=>{
+        const item=document.createElement('div');item.className='grid-item';
+        item.innerHTML=`<img src="${ev.target.result}" alt=""><div class="grid-item-lbl">${f.name}</div>
+          <div class="grid-item-badge raw">RAW</div>`;
+        item.onclick=()=>{encFile=f;showPrev(f,'pimg-enc','pmeta-enc','prev-enc');};
+        grid.appendChild(item);};r.readAsDataURL(f);
+    });
+  }
+  // Capacity
+  const i=new Image();const r=new FileReader();
+  r.onload=e2=>{i.src=e2.target.result;i.onload=()=>{
+    const max=Math.floor(i.width*i.height*3/8)-46;
+    document.getElementById('cap-wrap').style.display='block';
+    document.getElementById('cap-info').textContent=`Max capacity: ~${max.toLocaleString()} chars`;
+    updateCap();
+    // AI suggestion
+    runAISuggestFor(files[0]);
+  };};r.readAsDataURL(files[0]);
+});
+
+function updateCap(){
+  const msg=document.getElementById('enc-msg').value;
+  const img=document.getElementById('pimg-enc');if(!img.naturalWidth)return;
+  const max=Math.floor(img.naturalWidth*img.naturalHeight*3/8)-46;
+  const pct=Math.min(100,msg.length/max*100);
+  document.getElementById('cap-fill').style.width=pct+'%';
+  document.getElementById('cap-pct').textContent=pct.toFixed(1)+'%';
+  document.getElementById('cap-fill').style.background=
+    pct>90?'var(--danger)':pct>70?'var(--warn)':'linear-gradient(90deg,var(--accent),var(--accent2))';
+}
+
+setupDrop('upz-enc','fi-enc',f=>{
+  encFile=f;showPrev(f,'pimg-enc','pmeta-enc','prev-enc');
+  const r=new FileReader();r.onload=e=>{const i=new Image();i.src=e.target.result;i.onload=()=>{
+    const max=Math.floor(i.width*i.height*3/8)-46;
+    document.getElementById('cap-wrap').style.display='block';
+    document.getElementById('cap-info').textContent=`Max capacity: ~${max.toLocaleString()} chars`;
+    updateCap();runAISuggestFor(f);};};r.readAsDataURL(f);
+});
+setupDrop('upz-dec','fi-dec',f=>{decFile=f;showPrev(f,'pimg-dec','pmeta-dec','prev-dec');});
+setupDrop('upz-an','fi-an',f=>{anFile=f;});
+setupDrop('upz-exif','fi-exif',f=>{exifFile=f;});
+setupDrop('upz-atk','fi-atk',f=>{atkFile=f;showPrev(f,'pimg-atk',null,'prev-atk');});
+setupDrop('upz-viz','fi-viz',f=>{vizFile=f;loadVizImage(f);});
+
+/* ════ ENCODE PROGRESS ANIMATION ════ */
+function showProgress(show){document.getElementById('prog-wrap').classList.toggle('on',show);}
+function setProgStep(step,state){
+  const dot=document.getElementById('pd-'+step);
+  dot.className='prog-dot '+(state==='done'?'done':state==='active'?'active':'');
+  document.getElementById('pd-'+step).className='prog-dot '+(state==='done'?'done':state==='active'?'active':'');
+}
+async function animateProgress(){
+  showProgress(true);
+  const steps=4;const delays=[0,800,1600,2400];
+  for(let i=1;i<=steps;i++){
+    await new Promise(r=>setTimeout(r,delays[i-1]));
+    setProgStep(i,'active');
+    document.getElementById('prog-bar').style.width=((i-1)/steps*100)+'%';
+    beep(440+i*80,.06,'square');
+  }
+}
+
+/* ════ ENCODE ════ */
+async function doEncode(){
+  hideAlert('enc-alert');
+  if(!encFile)return showAlert('enc-alert','Select a cover image first.','err');
+  if(!document.getElementById('enc-msg').value.trim())return showAlert('enc-alert','Enter a secret message.','err');
+  if(!document.getElementById('enc-pwd').value)return showAlert('enc-alert','Enter a password or use ECDH.','err');
+  clickSound();
+  const btn=document.getElementById('enc-btn');btn.classList.add('ld');btn.disabled=true;
+  addLog('<strong>Encode operation started</strong> — '+encFile.name);
+  animateProgress();
+
+  const fd=new FormData();
+  fd.append('image',encFile);
+  fd.append('message',document.getElementById('enc-msg').value);
+  fd.append('password',document.getElementById('enc-pwd').value);
+  fd.append('decoy_password',document.getElementById('enc-dpwd').value);
+  fd.append('decoy_message',document.getElementById('enc-dmsg').value);
+  fd.append('expiry_hours',document.getElementById('enc-expiry').value);
+  fd.append('max_attempts',document.getElementById('enc-att').value);
+  fd.append('aes_bits',selectedAES);
+  fd.append('double_encrypt',doubleEnc);
+  fd.append('scrub_exif',exifScrub);
+
+  try{
+    const res=await fetch('/encode',{method:'POST',body:fd});
+    const d=await res.json();if(!res.ok||d.error)throw new Error(d.error);
+
+    // Complete progress
+    [1,2,3,4].forEach(i=>setProgStep(i,'done'));
+    document.getElementById('prog-bar').style.width='100%';
+
+    outputB64=d.image;
+    document.getElementById('out-img').src='data:image/png;base64,'+d.image;
+    document.getElementById('out-pct').textContent=d.info.percent+'%';
+    document.getElementById('out-dim').textContent=d.info.image_size||'—';
+
+    document.getElementById('b-aes').textContent='AES-'+selectedAES+'-GCM';
+    document.getElementById('b-ecdh').style.display=sharedHex?'inline':'none';
+    document.getElementById('b-double').style.display=doubleEnc?'inline':'none';
+    document.getElementById('b-decoy').style.display=d.info.has_decoy?'inline':'none';
+    document.getElementById('b-exif').style.display=exifScrub?'inline':'none';
+    document.getElementById('b-exp').style.display=d.info.expiry_ts>0?'inline':'none';
+
+    document.getElementById('enc-out').classList.add('on');
+    showAlert('enc-alert',`Success — ${d.info.percent}% capacity — ${d.info.used_bits.toLocaleString()} bits embedded`,'ok');
+    successSound();
+
+    const src='data:image/png;base64,'+d.image;
+    addHistory('enc',encFile.name,`${d.info.percent}% capacity — AES-${selectedAES}`,src);
+    addLog(`<strong>Encode complete</strong> — ${d.info.percent}% — AES-${selectedAES} — ${doubleEnc?'double enc':'single enc'}`,'ok');
+
+    // Update grid badge
+    document.querySelectorAll('.grid-item-badge').forEach(b=>{
+      if(b.closest('.grid-item img')?.src===document.getElementById('pimg-enc').src){
+        b.textContent='ENC';b.className='grid-item-badge enc';}});
+  }catch(e){
+    errorSound();
+    showAlert('enc-alert','ERROR: '+e.message,'err');
+    addLog('Encode failed: '+e.message,'err');
+  }finally{btn.classList.remove('ld');btn.disabled=false;setTimeout(()=>{showProgress(false);[1,2,3,4].forEach(i=>setProgStep(i,''));},2000);}
+}
+
+function downloadImg(){
+  if(!outputB64)return;
+  clickSound();
+  const a=document.createElement('a');a.href='data:image/png;base64,'+outputB64;
+  a.download='stegoforge_encoded_v4.png';a.click();
+  addLog('<strong>Stego image downloaded</strong>','ok');
+}
+
+/* ════ DECODE ════ */
+async function doDecode(){
+  hideAlert('dec-alert');document.getElementById('dec-out').classList.remove('on');
+  if(!decFile)return showAlert('dec-alert','Select a stego image.','err');
+  if(!document.getElementById('dec-pwd').value)return showAlert('dec-alert','Enter a password.','err');
+  clickSound();
+  const btn=document.getElementById('dec-btn');btn.classList.add('ld');btn.disabled=true;
+  addLog('<strong>Decode operation started</strong> — '+decFile.name);
+  const fd=new FormData();fd.append('image',decFile);fd.append('password',document.getElementById('dec-pwd').value);
+  try{
+    const res=await fetch('/decode',{method:'POST',body:fd});
+    const d=await res.json();if(!res.ok||d.error)throw new Error(d.error);
+    document.getElementById('dec-text').textContent=d.message;
+    document.getElementById('decoy-warn').style.display=d.is_decoy?'block':'none';
+    const ex=document.getElementById('dec-expiry');
+    if(d.expiry_ts>0){ex.style.display='block';ex.textContent='Expires: '+new Date(d.expiry_ts*1000).toLocaleString();}
+    else ex.style.display='none';
+    document.getElementById('dec-out').classList.add('on');
+    showAlert('dec-alert',d.is_decoy?'DECOY message decoded':'Message decrypted successfully',d.is_decoy?'warn':'ok');
+    successSound();
+    const src=document.getElementById('pimg-dec').src;
+    addHistory('dec',decFile.name,d.is_decoy?'decoy password':'real password',src);
+    addLog(`<strong>Decode complete</strong> — ${d.is_decoy?'DECOY':'real'} message`,'ok');
+  }catch(e){
+    errorSound();showAlert('dec-alert','ERROR: '+e.message,'err');addLog('Decode failed: '+e.message,'err');
+  }finally{btn.classList.remove('ld');btn.disabled=false;}
+}
+
+function copyDecoded(){
+  navigator.clipboard.writeText(document.getElementById('dec-text').textContent)
+    .then(()=>{successSound();showAlert('dec-alert','Copied to clipboard','ok');});
+}
+function clearDec(){document.getElementById('dec-out').classList.remove('on');hideAlert('dec-alert');}
+
+/* ════ HISTOGRAM ════ */
+async function runHistogram(){
+  if(!anFile)return;clickSound();
+  const btn=document.getElementById('an-btn');btn.classList.add('ld');btn.disabled=true;
+  const fd=new FormData();fd.append('image',anFile);
+  try{
+    const res=await fetch('/histogram',{method:'POST',body:fd});
+    const d=await res.json();if(d.error)throw new Error(d.error);
+    const canvas=document.getElementById('hist-canvas');
+    const ctx=canvas.getContext('2d');
+    const W=canvas.offsetWidth||460,H=140;canvas.width=W;canvas.height=H;ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='rgba(77,159,255,.06)';ctx.lineWidth=1;
+    for(let i=0;i<=4;i++){const y=H-i*(H/4);ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+    const chs=[{d:d.r,c:'rgba(255,100,136,.85)'},{d:d.g,c:'rgba(68,200,136,.85)'},{d:d.b,c:'rgba(68,150,255,.85)'}];
+    const bw=(W-60)/(6+2);
+    chs.forEach((ch,ci)=>ch.d.forEach((val,bi)=>{
+      const x=30+(ci*2+bi)*(bw+4),bH=val/100*(H-20);
+      ctx.fillStyle=ch.c;ctx.fillRect(x,H-bH,bw,bH);
+      if(bH>12){ctx.fillStyle='rgba(255,255,255,.7)';ctx.font='8px JetBrains Mono';
+        ctx.textAlign='center';ctx.fillText(val+'%',x+bw/2,H-bH-3);}
+    }));
+    document.getElementById('an-out').classList.add('on');
+    const n5050=(a)=>Math.abs(a[0]-a[1])<5;
+    const likely=n5050(d.r)&&n5050(d.g)&&n5050(d.b);
+    const v=document.getElementById('an-verdict');
+    v.style.color=likely?'var(--warn)':'var(--success)';
+    v.textContent=likely?'WARNING: Near 50/50 LSB distribution — possible hidden data detected.':'CLEAR: Natural LSB distribution — no steganography detected.';
+    addLog(`<strong>Histogram complete</strong> — ${d.pixels.toLocaleString()} pixels — ${likely?'SUSPICIOUS':'CLEAN'}`,'ok');
+    successSound();
+  }catch(e){errorSound();addLog('Histogram error: '+e.message,'err');}
+  finally{btn.classList.remove('ld');btn.disabled=false;}
+}
+
+/* ════ EXIF SCRUB ════ */
+async function runExifScrub(){
+  if(!exifFile)return;clickSound();
+  const btn=document.getElementById('exif-btn');btn.classList.add('ld');btn.disabled=true;
+  const fd=new FormData();fd.append('image',exifFile);
+  try{
+    const res=await fetch('/scrub-exif',{method:'POST',body:fd});
+    const d=await res.json();if(d.error)throw new Error(d.error);
+    exifB64=d.image;
+    document.getElementById('exif-result').textContent=
+      d.tag_count>0?`Removed ${d.tag_count} tags: ${d.removed_tags.slice(0,5).join(', ')}${d.tag_count>5?'...':''}`:
+      'No EXIF metadata found — image is already clean.';
+    document.getElementById('exif-out').style.display='block';
+    showAlert('exif-alert',`Scrubbed ${d.tag_count} metadata tags`,'ok');
+    successSound();
+    addLog(`<strong>EXIF scrub complete</strong> — ${d.tag_count} tags removed`,'ok');
+  }catch(e){errorSound();showAlert('exif-alert','ERROR: '+e.message,'err');}
+  finally{btn.classList.remove('ld');btn.disabled=false;}
+}
+function downloadExif(){
+  if(!exifB64)return;clickSound();
+  const a=document.createElement('a');a.href='data:image/png;base64,'+exifB64;
+  a.download='stegoforge_clean.png';a.click();
+}
+
+/* ════ ATTACK SIMULATION ════ */
+function selectAtk(id,el){
+  clickSound();selectedAtk=id;
+  document.querySelectorAll('.attack-opt').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+async function runAttack(){
+  if(!atkFile)return showAlert('atk-alert','Upload a stego image first.','err');
+  clickSound();
+  const btn=document.getElementById('atk-btn');btn.classList.add('ld');btn.disabled=true;
+  addLog(`<strong>Attack simulation</strong> — ${selectedAtk} on ${atkFile.name}`);
+  const fd=new FormData();
+  fd.append('image',atkFile);fd.append('attack',selectedAtk);
+  fd.append('password',document.getElementById('atk-pwd').value);
+  try{
+    const res=await fetch('/attack-sim',{method:'POST',body:fd});
+    const d=await res.json();if(!res.ok||d.error)throw new Error(d.error);
+    atkB64=d.attacked_image;
+    const verdict=document.getElementById('atk-verdict');
+    verdict.className='attack-result '+(d.survived?'attack-survived':'attack-failed');
+    verdict.innerHTML=`ATTACK: ${d.attack_label}<br>RESULT: Message ${d.survived?'SURVIVED — data intact':'DESTROYED — steganography defeated'}<br>${d.survived?'Preview: '+d.preview_message:''}`;
+    document.getElementById('atk-img').src='data:image/png;base64,'+d.attacked_image;
+    document.getElementById('atk-result').style.display='block';
+    showAlert('atk-alert',d.survived?'Message survived the attack!':'Message destroyed by attack.',d.survived?'ok':'warn');
+    d.survived?successSound():errorSound();
+    addLog(`Attack result: ${d.survived?'SURVIVED':'DESTROYED'} — ${d.attack_label}`,'ok');
+  }catch(e){errorSound();showAlert('atk-alert','ERROR: '+e.message,'err');}
+  finally{btn.classList.remove('ld');btn.disabled=false;}
+}
+function downloadAtk(){
+  if(!atkB64)return;clickSound();
+  const a=document.createElement('a');a.href='data:image/png;base64,'+atkB64;
+  a.download='stegoforge_attacked.png';a.click();
+}
+
+/* ════ LIVE VISUALIZATION ════ */
+let vizBitMode=false,vizHeatMode=false;
+function toggleViz(mode){
+  if(mode==='bits'){vizBitMode=!document.getElementById('tt-bits').classList.contains('on');if(vizFile)renderViz();}
+  if(mode==='heat'){vizHeatMode=!document.getElementById('tt-heat').classList.contains('on');}
+}
+
+function loadVizImage(file){
+  document.getElementById('vis-wrap').style.display='block';
+  const r=new FileReader();
+  r.onload=e=>{
+    const img=new Image();
+    img.onload=()=>{
+      const canvas=document.getElementById('vis-canvas');
+      canvas.width=img.width;canvas.height=img.height;
+      const ctx=canvas.getContext('2d');
+      ctx.drawImage(img,0,0);
+      vizOrigData=ctx.getImageData(0,0,img.width,img.height);
+
+      // Click to inspect pixel
+      canvas.onclick=ev=>{
+        const rect=canvas.getBoundingClientRect();
+        const scaleX=img.width/rect.width,scaleY=img.height/rect.height;
+        const x=Math.floor((ev.clientX-rect.left)*scaleX);
+        const y=Math.floor((ev.clientY-rect.top)*scaleY);
+        inspectPixel(x,y);
+        clickSound();
+      };
+    };
+    img.src=e.target.result;
+  };
+  r.readAsDataURL(file);
+}
+
+function renderViz(){
+  if(!vizOrigData)return;
+  const canvas=document.getElementById('vis-canvas');
+  const ctx=canvas.getContext('2d');
+  const imgData=new ImageData(new Uint8ClampedArray(vizOrigData.data),vizOrigData.width,vizOrigData.height);
+  if(document.getElementById('tt-bits').classList.contains('on')){
+    // Highlight pixels where LSB of R is 1 (likely encoded)
+    for(let i=0;i<imgData.data.length;i+=4){
+      if(imgData.data[i]&1){// R LSB = 1
+        imgData.data[i]=0;imgData.data[i+1]=229;imgData.data[i+2]=160;// green tint
+      }
+    }
+  }
+  ctx.putImageData(imgData,0,0);
+}
+
+function resetViz(){if(!vizOrigData)return;const canvas=document.getElementById('vis-canvas');const ctx=canvas.getContext('2d');ctx.putImageData(vizOrigData,0,0);}
+
+function renderHeatmap(){
+  if(!vizOrigData)return;
+  const src=vizOrigData;const W=src.width,H=src.height;
+  const canvas=document.getElementById('heatmap-canvas');
+  canvas.width=W;canvas.height=H;canvas.style.width='100%';
+  const ctx=canvas.getContext('2d');
+  const heatData=ctx.createImageData(W,H);
+  for(let i=0;i<src.data.length;i+=4){
+    const lsb=(src.data[i]&1)+(src.data[i+1]&1)+(src.data[i+2]&1);
+    const bright=lsb*85;
+    heatData.data[i]=bright;heatData.data[i+1]=lsb===3?229:bright;heatData.data[i+2]=0;heatData.data[i+3]=255;
+  }
+  ctx.putImageData(heatData,0,0);
+}
+
+function inspectPixel(x,y){
+  if(!vizOrigData)return;
+  const idx=(y*vizOrigData.width+x)*4;
+  const r=vizOrigData.data[idx],g=vizOrigData.data[idx+1],b=vizOrigData.data[idx+2];
+  document.getElementById('px-coord').textContent=`Pixel at (${x}, ${y})`;
+  document.getElementById('px-color').style.background=`rgb(${r},${g},${b})`;
+  document.getElementById('px-hex').textContent=`#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+  ['r','g','b'].forEach((ch,ci)=>{
+    const val=[r,g,b][ci];
+    const bits=format8bits(val);
+    document.getElementById('bits-'+ch).innerHTML=bits.map((bit,i)=>{
+      const isLSB=i===7;
+      return `<div class="bit ${isLSB?(bit?'bit-lsb':'bit-lsb'):(bit?'bit-1':'bit-0')}" style="${isLSB?'border:2px solid var(--warn);background:rgba(255,179,71,.25);color:var(--warn)':''}">${bit}</div>`;
+    }).join('');
+  });
+  document.getElementById('px-content').style.display='block';
+}
+function format8bits(n){return Array.from(format(n,8));}
+function format(n,b){return n.toString(2).padStart(b,'0').split('');}
+
+/* ════ AI SUGGEST ════ */
+async function runAISuggestFor(file){
+  const fd=new FormData();fd.append('image',file);fd.append('msg_len',document.getElementById('enc-msg').value.length);
+  try{
+    const res=await fetch('/ai-suggest',{method:'POST',body:fd});
+    const d=await res.json();if(d.error)return;
+    const box=document.getElementById('ai-suggest-box');
+    box.style.display='block';
+    box.innerHTML='<div style="color:var(--purple);margin-bottom:6px;font-size:9px;letter-spacing:2px">AI ANALYSIS</div>'+
+      `Complexity: ${d.complexity_score}/100 — Capacity: ${d.used_pct}%<br>`+
+      d.suggestions.map(s=>'&gt; '+s).join('<br>');
+  }catch(e){}
+}
+async function runAISuggest(){if(vizFile)runAISuggestFor(vizFile);}
+
+/* ════ ECDH ════ */
+async function genKeys(){
+  clickSound();const btn=document.getElementById('gen-btn');btn.classList.add('ld');btn.disabled=true;
+  try{
+    const res=await fetch('/ecdh/generate',{method:'POST'});const d=await res.json();
+    if(d.error)throw new Error(d.error);
+    myKeypair=d;
+    document.getElementById('pub-key').textContent=d.public_pem;
+    document.getElementById('pub-fp').textContent='Fingerprint: '+d.fingerprint;
+    document.getElementById('priv-key').textContent=d.private_pem;
+    document.getElementById('gen-out').style.display='block';
+    showAlert('gen-alert','Keypair generated — download private key to a secure location','ok');
+    successSound();addLog('<strong>ECDH P-256 keypair generated</strong> — fp: '+d.fingerprint,'ecdh');
+  }catch(e){errorSound();showAlert('gen-alert','ERROR: '+e.message,'err');}
+  finally{btn.classList.remove('ld');btn.disabled=false;}
+}
+
+function dlKey(type){
+  if(!myKeypair)return;clickSound();
+  const content=type==='public'?myKeypair.public_pem:myKeypair.private_pem;
+  const a=document.createElement('a');
+  a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(content);
+  a.download=type==='public'?'stegoforge_public.pem':'PRIVATE_KEY_KEEP_SECRET.pem';a.click();
+}
+
+setupDrop('upz-partner','fi-partner',async f=>{
+  clickSound();
+  const fd=new FormData();fd.append('public_key',f);
+  try{
+    const res=await fetch('/ecdh/fingerprint',{method:'POST',body:fd});const d=await res.json();
+    if(d.error)throw new Error(d.error);
+    partnerPem=d.public_pem;
+    document.getElementById('partner-fp').textContent='Their fingerprint: '+d.fingerprint;
+    document.getElementById('partner-fp-wrap').style.display='block';
+    showAlert('partner-alert','Partner key loaded — verify fingerprint verbally with them','ok');
+    addLog('<strong>Partner public key loaded</strong> — fp: '+d.fingerprint,'ecdh');
+  }catch(e){showAlert('partner-alert','ERROR: '+e.message,'err');}
+});
+
+async function deriveSecret(){
+  if(!myKeypair)return showAlert('derive-alert','Generate your keypair first (Step 1)','err');
+  if(!partnerPem)return showAlert('derive-alert','Load partner public key first (Step 2)','err');
+  clickSound();const btn=document.getElementById('derive-btn');btn.classList.add('ld');btn.disabled=true;
+  try{
+    const res=await fetch('/ecdh/shared-secret',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({my_private_pem:myKeypair.private_pem,their_public_pem:partnerPem})});
+    const d=await res.json();if(d.error)throw new Error(d.error);
+    sharedHex=d.shared_secret_hex;
+    document.getElementById('secret-box').textContent=sharedHex;
+    document.getElementById('derive-out').style.display='block';
+    // Auto-fill passwords
+    document.getElementById('enc-pwd').value=sharedHex;
+    document.getElementById('dec-pwd').value=sharedHex;
+    document.getElementById('enc-ecdh-banner').classList.add('on');
+    document.getElementById('dec-ecdh-banner').classList.add('on');
+    document.getElementById('ecdh-pwd-lbl').style.display='inline';
+    document.getElementById('ecdh-dec-lbl').style.display='inline';
+    showAlert('derive-alert','Shared secret computed — auto-loaded into Encode + Decode','ok');
+    successSound();addLog('<strong>ECDH shared secret derived</strong> — auto-loaded as password','ecdh');
+  }catch(e){errorSound();showAlert('derive-alert','ERROR: '+e.message,'err');}
+  finally{btn.classList.remove('ld');btn.disabled=false;}
+}
+
+function copyEl(id){navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>{clickSound();addLog('Copied to clipboard','ok');});}
+
+/* ════ TERMINAL ════ */
+const TERM_HELP=`
+<span class="term-info">StegoForge v4.0 Terminal — Available Commands:</span>
+  <span class="term-info">encode</span>    Encode a message (use Encode tab for file selection)
+  <span class="term-info">decode</span>    Decode a stego image (use Decode tab for file selection)
+  <span class="term-info">status</span>    Show system status
+  <span class="term-info">history</span>   Show operation history
+  <span class="term-info">clear</span>     Clear terminal
+  <span class="term-info">keygen</span>    Generate ECDH keypair
+  <span class="term-info">scan</span>      Analyze loaded image for hidden data
+  <span class="term-info">scrub</span>     Remove EXIF metadata from image
+  <span class="term-info">whoami</span>    Show current agent
+  <span class="term-info">help</span>      Show this message
+`;
+let termHistory=[],termHistIdx=0;
+
+function termPrint(html,cls=''){
+  const el=document.getElementById('term-out');
+  const line=document.createElement('div');
+  line.className='term-line '+(cls||'');line.innerHTML=html;
+  el.appendChild(line);el.scrollTop=el.scrollHeight;
+}
+
+function initTerminal(){
+  termPrint('<span class="term-success">StegoForge v4.0 Terminal — Type \'help\' for commands</span>');
+  termPrint('<span class="term-info">Agent: {{ username }} — Session active — ECDH P-256 ready</span>');
+}
+
+async function handleTermCmd(cmd){
+  termHistory.unshift(cmd);termHistIdx=0;
+  termPrint(`<span class="term-prompt">stegoforge &gt;</span> <span class="term-cmd">${cmd}</span>`);
+  const parts=cmd.trim().split(/\s+/);
+  const base=parts[0].toLowerCase();
+
+  if(base==='help'){termPrint(TERM_HELP);}
+  else if(base==='clear'){document.getElementById('term-out').innerHTML='';initTerminal();}
+  else if(base==='status'){
+    termPrint(`<span class="term-info">System: ONLINE | AES: ${selectedAES}-GCM | ECDH: ${sharedHex?'KEY LOADED':'NO KEY'} | Double-enc: ${doubleEnc?'ON':'OFF'} | EXIF-scrub: ${exifScrub?'ON':'OFF'}</span>`);
+    termPrint(`<span class="term-info">Operations: ${stats.total} total | ${stats.enc} encodes | ${stats.dec} decodes</span>`);
+  }
+  else if(base==='whoami'){termPrint(`<span class="term-info">Agent: {{ username }} | Authenticated | Session active</span>`);}
+  else if(base==='history'){
+    if(!history_.length){termPrint('<span class="term-warn">No operations in session history</span>');}
+    else history_.forEach(h=>termPrint(`<span class="term-info">[${h.type.toUpperCase()}] ${h.name} — ${h.info} — ${h.time}</span>`));
+  }
+  else if(base==='keygen'){
+    termPrint('<span class="term-warn">Generating ECDH P-256 keypair...</span>');
+    try{
+      const res=await fetch('/ecdh/generate',{method:'POST'});const d=await res.json();
+      if(d.error)throw new Error(d.error);
+      myKeypair=d;
+      termPrint(`<span class="term-success">Keypair generated — Fingerprint: ${d.fingerprint}</span>`);
+      termPrint('<span class="term-info">Use the ECDH tab to download and exchange keys</span>');
+      addLog('<strong>ECDH keypair generated via terminal</strong>','ecdh');
+    }catch(e){termPrint(`<span class="term-err">Error: ${e.message}</span>`);}
+  }
+  else if(base==='encode'){
+    if(!encFile){termPrint('<span class="term-warn">No image loaded. Use Encode tab to select an image first.</span>');}
+    else if(!document.getElementById('enc-msg').value){termPrint('<span class="term-warn">No message set. Use Encode tab to enter a message.</span>');}
+    else{termPrint('<span class="term-warn">Switching to Encode tab to complete operation...</span>');goPage('encode',null);}
+  }
+  else if(base==='decode'){
+    if(!decFile){termPrint('<span class="term-warn">No stego image loaded. Use Decode tab to select one.</span>');}
+    else{termPrint('<span class="term-warn">Switching to Decode tab...</span>');goPage('decode',null);}
+  }
+  else if(base==='scan'){
+    if(!anFile&&!encFile){termPrint('<span class="term-warn">No image loaded for scanning.</span>');}
+    else{
+      termPrint('<span class="term-warn">Running LSB analysis...</span>');
+      const file=anFile||encFile;
+      const fd=new FormData();fd.append('image',file);
+      const res=await fetch('/histogram',{method:'POST',body:fd});const d=await res.json();
+      const near=(a)=>Math.abs(a[0]-a[1])<5;
+      const sus=near(d.r)&&near(d.g)&&near(d.b);
+      termPrint(`<span class="${sus?'term-warn':'term-success'}">R: ${d.r[0]}%/${d.r[1]}% | G: ${d.g[0]}%/${d.g[1]}% | B: ${d.b[0]}%/${d.b[1]}%</span>`);
+      termPrint(`<span class="${sus?'term-warn':'term-success'}">${sus?'SUSPICIOUS: Possible hidden data':'CLEAN: No steganography detected'}</span>`);
+    }
+  }
+  else if(base==='scrub'){
+    if(!exifFile&&!encFile){termPrint('<span class="term-warn">No image loaded. Use Analysis tab to load one.</span>');}
+    else{
+      termPrint('<span class="term-warn">Scrubbing EXIF metadata...</span>');
+      const file=exifFile||encFile;
+      const fd=new FormData();fd.append('image',file);
+      const res=await fetch('/scrub-exif',{method:'POST',body:fd});const d=await res.json();
+      termPrint(`<span class="term-success">Removed ${d.tag_count} metadata tags: ${d.removed_tags.slice(0,3).join(', ')}</span>`);
+    }
+  }
+  else if(cmd.trim()===''){/* empty */}
+  else{termPrint(`<span class="term-err">Command not recognized: ${base} — type 'help' for commands</span>`);}
+}
+
+function handleTermKey(e){
+  if(e.key==='Enter'){
+    const cmd=document.getElementById('term-input').value.trim();
+    document.getElementById('term-input').value='';
+    handleTermCmd(cmd);
+  }else if(e.key==='ArrowUp'){
+    if(termHistIdx<termHistory.length){
+      document.getElementById('term-input').value=termHistory[termHistIdx];termHistIdx++;
+    }
+  }else if(e.key==='ArrowDown'){
+    termHistIdx=Math.max(0,termHistIdx-1);
+    document.getElementById('term-input').value=termHistory[termHistIdx]||'';
+  }
+}
+
+// Init terminal on load
+setTimeout(initTerminal, 500);
+
+// Clock
+setInterval(()=>{
+  const t=new Date().toISOString().substr(11,8);
+  document.getElementById('clock').textContent=t;
+  document.getElementById('clock2').textContent=t+' UTC';
+},1000);
+
+addLog('<strong>StegoForge v4.0 initialized</strong> — Agent session started','ok');
+</script>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StegoForge — Secure Access</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=JetBrains+Mono:wght@300;400;600&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#01030c;--panel:rgba(5,15,45,0.9);
+  --accent:#4d9fff;--accent2:#00cfff;--danger:#ff4466;--success:#00e5a0;
+  --text:#d0e4ff;--muted:rgba(180,210,255,0.45);
+  --border:rgba(77,159,255,0.2);--border2:rgba(77,159,255,0.5);
+  --font-display:'Cinzel',serif;--font-mono:'JetBrains Mono',monospace;--font-body:'Exo 2',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;position:relative;}
+
+/* ANIMATED BG */
+canvas{position:fixed;inset:0;z-index:0;}
+body::before{content:'';position:fixed;inset:0;z-index:0;
+  background-image:linear-gradient(rgba(77,159,255,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(77,159,255,0.03) 1px,transparent 1px);
+  background-size:48px 48px;}
+
+/* GLOW ORBS */
+.orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;}
+.orb1{width:500px;height:500px;background:radial-gradient(#0033aa,transparent);top:-150px;left:-100px;opacity:0.15;animation:drift 18s ease-in-out infinite;}
+.orb2{width:400px;height:400px;background:radial-gradient(#003388,transparent);bottom:-100px;right:-80px;opacity:0.12;animation:drift 22s ease-in-out infinite reverse;}
+@keyframes drift{0%,100%{transform:translate(0,0);}50%{transform:translate(40px,-30px);}}
+
+/* LOGIN CARD */
+.card{position:relative;z-index:10;width:420px;
+  background:var(--panel);border:1px solid var(--border);border-radius:16px;
+  padding:44px 40px;backdrop-filter:blur(24px);}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent2),transparent);border-radius:16px 16px 0 0;}
+
+/* LOGO */
+.logo{text-align:center;margin-bottom:36px;}
+.logo-svg{display:block;margin:0 auto 16px;}
+.logo-name{font-family:var(--font-display);font-size:22px;font-weight:900;
+  letter-spacing:4px;background:linear-gradient(135deg,#7eb8ff,#00cfff);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.logo-sub{font-family:var(--font-mono);font-size:9px;color:var(--muted);
+  letter-spacing:3px;margin-top:4px;}
+
+/* FORM */
+.field{margin-bottom:20px;}
+label{display:block;font-family:var(--font-mono);font-size:10px;
+  letter-spacing:2px;color:var(--accent);margin-bottom:8px;}
+input[type=text],input[type=password]{
+  width:100%;background:rgba(0,10,30,0.7);border:1px solid var(--border);
+  color:var(--text);font-family:var(--font-mono);font-size:13px;
+  padding:12px 14px;border-radius:8px;outline:none;transition:all .25s;}
+input:focus{border-color:var(--accent2);box-shadow:0 0 0 3px rgba(0,207,255,0.1);}
+
+/* PASSWORD WRAP */
+.pw{position:relative;}
+.pw input{padding-right:42px;}
+.eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;
+  transition:color .2s;padding:3px;}
+.eye:hover{color:var(--accent2);}
+
+/* STRENGTH BAR */
+.str-wrap{height:3px;background:rgba(255,255,255,0.06);border-radius:2px;margin-top:7px;overflow:hidden;}
+.str-fill{height:100%;width:0;border-radius:2px;transition:all .35s;}
+
+/* CAPSLOCK WARNING */
+.capslock-warn{font-family:var(--font-mono);font-size:10px;color:var(--danger);
+  margin-top:6px;display:none;}
+.capslock-warn.show{display:block;}
+
+/* LOGIN BTN */
+.btn{width:100%;padding:14px;background:linear-gradient(135deg,rgba(15,50,130,0.9),rgba(8,35,90,0.9));
+  border:1px solid var(--accent);color:var(--accent);font-family:var(--font-display);
+  font-size:12px;font-weight:700;letter-spacing:4px;border-radius:8px;
+  cursor:pointer;transition:all .25s;position:relative;overflow:hidden;margin-top:8px;}
+.btn:hover{background:linear-gradient(135deg,rgba(30,80,190,0.95),rgba(15,55,130,0.95));
+  box-shadow:0 0 24px rgba(77,159,255,0.3);color:#fff;}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+.btn.loading{color:transparent!important;}
+.btn.loading::after{content:'';position:absolute;width:16px;height:16px;
+  border:2px solid transparent;border-top-color:var(--accent);border-radius:50%;
+  animation:spin .7s linear infinite;top:50%;left:50%;transform:translate(-50%,-50%);}
+@keyframes spin{to{transform:translate(-50%,-50%)rotate(360deg);}}
+
+/* ERROR */
+.error-box{background:rgba(255,68,102,0.08);border:1px solid rgba(255,68,102,0.3);
+  border-radius:6px;padding:10px 14px;font-family:var(--font-mono);font-size:11px;
+  color:var(--danger);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+
+/* FOOTER */
+.footer{text-align:center;margin-top:28px;font-family:var(--font-mono);
+  font-size:9px;color:var(--muted);letter-spacing:2px;line-height:1.8;}
+
+/* ATTEMPTS BAR */
+.attempts{display:flex;gap:4px;margin-top:10px;justify-content:center;}
+.att-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,68,102,0.3);
+  border:1px solid rgba(255,68,102,0.4);transition:background .3s;}
+.att-dot.used{background:var(--danger);box-shadow:0 0 6px var(--danger);}
+</style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<div class="card">
+  <!-- LOGO -->
+  <div class="logo">
+    <svg class="logo-svg" width="64" height="64" viewBox="0 0 64 64">
+      <polygon points="32,3 60,18 60,46 32,61 4,46 4,18" fill="rgba(5,20,60,0.8)" stroke="#4d9fff" stroke-width="1.5"/>
+      <polygon points="32,9 54,21 54,43 32,55 10,43 10,21" fill="none" stroke="#1a5fd0" stroke-width="0.8" opacity="0.5"/>
+      <ellipse cx="32" cy="32" rx="14" ry="9" fill="none" stroke="#00cfff" stroke-width="1.5"/>
+      <circle cx="32" cy="32" r="4.5" fill="#00cfff" style="animation:pulse 2.5s ease-in-out infinite"/>
+      <circle cx="32" cy="32" r="8" fill="none" stroke="#00cfff" stroke-width="0.8" opacity="0.4"/>
+      <style>@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}</style>
+    </svg>
+    <div class="logo-name">STEGOFORGE</div>
+    <div class="logo-sub">CLASSIFIED ACCESS TERMINAL</div>
+  </div>
+
+  {% if error %}
+  <div class="error-box">
+    <span>!</span> {{ error }}
+  </div>
+  {% endif %}
+
+  <form method="POST" id="login-form">
+    <div class="field">
+      <label>// AGENT ID</label>
+      <input type="text" name="username" id="username" placeholder="Enter agent ID..."
+        autocomplete="username" required autofocus>
+    </div>
+
+    <div class="field">
+      <label>// ACCESS CODE</label>
+      <div class="pw">
+        <input type="password" name="password" id="password"
+          placeholder="Enter access code..." autocomplete="current-password"
+          required oninput="checkStrength(this)" onkeyup="checkCaps(event)">
+        <button type="button" class="eye" onclick="toggleEye()">&#128065;</button>
+      </div>
+      <div class="str-wrap"><div class="str-fill" id="str-fill"></div></div>
+      <div class="capslock-warn" id="caps-warn">CAPS LOCK IS ON</div>
+    </div>
+
+    <button type="submit" class="btn" id="submit-btn" onclick="this.classList.add('loading')">
+      AUTHENTICATE
+    </button>
+  </form>
+
+  <div class="attempts" id="att-dots">
+    <div class="att-dot {% if error %}used{% endif %}"></div>
+    <div class="att-dot"></div>
+    <div class="att-dot"></div>
+    <div class="att-dot"></div>
+    <div class="att-dot"></div>
+  </div>
+
+  <div class="footer">
+    STEGOFORGE v4.0 &bull; ECDH P-256 &bull; AES-256-GCM<br>
+    UNAUTHORIZED ACCESS IS PROHIBITED
+  </div>
+</div>
+
+<script>
+/* STAR CANVAS */
+const c=document.getElementById('c'),ctx=c.getContext('2d');
+c.width=window.innerWidth;c.height=window.innerHeight;
+const stars=Array.from({length:180},()=>({
+  x:Math.random()*c.width,y:Math.random()*c.height,
+  r:Math.random()*1.2+0.2,a:Math.random()*0.5+0.1,
+  t:Math.random()*Math.PI*2,s:0.003+Math.random()*0.01
+}));
+function drawStars(){
+  ctx.clearRect(0,0,c.width,c.height);
+  stars.forEach(s=>{s.t+=s.s;const a=s.a*(0.5+0.5*Math.sin(s.t));
+    ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(180,210,255,${a})`;ctx.fill();});
+  requestAnimationFrame(drawStars);
+}
+drawStars();
+
+function toggleEye(){
+  const i=document.getElementById('password');
+  const btn=document.querySelector('.eye');
+  i.type=i.type==='password'?'text':'password';
+  btn.innerHTML=i.type==='password'?'&#128065;':'&#128584;';
+}
+
+function checkStrength(inp){
+  const v=inp.value;let s=0;
+  if(v.length>=8)s++;if(v.length>=14)s++;
+  if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;if(/[^a-zA-Z0-9]/.test(v))s++;
+  const f=document.getElementById('str-fill');
+  f.style.width=(s/5*100)+'%';
+  f.style.background=s<2?'#ff4466':s<4?'#ffb347':'#00e5a0';
+}
+
+function checkCaps(e){
+  const warn=document.getElementById('caps-warn');
+  warn.classList.toggle('show',e.getModifierState&&e.getModifierState('CapsLock'));
+}
+</script>
+</body>
+</html>
