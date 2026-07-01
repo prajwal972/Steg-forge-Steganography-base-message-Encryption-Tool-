@@ -1,72 +1,147 @@
-🔐 StegoForge
+<div align="center">
 
-StegoForge is a secure image steganography platform built with Python, Flask, Pillow, and modern cryptographic techniques. The application enables users to hide and extract secret messages inside images while providing secure key exchange through Elliptic Curve Diffie-Hellman (ECDH) cryptography and user authentication for controlled access.
+# 🔐 StegoForge
 
-✨ Features
-Hide secret messages inside images
-Extract hidden messages from encoded images
-Secure image-based communication
-ECDH key pair generation
-Shared secret generation between users
-Public key fingerprint verification
-User authentication and login protection
-Session-based access control
-Image upload and processing
-Web-based user-friendly interface
+### Secure Image Steganography Platform
 
-🛠️ Technology Stack
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=24&pause=1000&color=36BCF7&center=true&vCenter=true&width=700&lines=Hide+Secret+Messages+Inside+Images;Secure+Image+Communication;Elliptic+Curve+Diffie-Hellman+(ECDH);Python+%7C+Flask+%7C+Cryptography;Built+for+Cyber+Security+Projects" />
 
-Python
-Flask
-Pillow (PIL)
-Cryptography Library
-HTML
-CSS
-JavaScript
+<br>
 
-📂 Project Structure
+<img src="https://img.shields.io/github/license/prajwal972/stegoforge?style=for-the-badge&color=green">
 
-stegoforge_v4/
-│
-├── app.py
-├── requirements.txt
-├── templates/
-│   ├── index.html
-│   └── login.html
-├── utils/
-│   ├── encoder.py
-│   ├── decoder.py
-│   └── ecdh.py
-└── static/
+<img src="https://img.shields.io/github/stars/prajwal972/stegoforge?style=for-the-badge">
 
-🚀 Installation
+<img src="https://img.shields.io/github/forks/prajwal972/stegoforge?style=for-the-badge">
 
-git clone https://github.com/yourusername/StegoForge.git
-cd StegoForge
+<img src="https://img.shields.io/github/issues/prajwal972/stegoforge?style=for-the-badge">
 
-pip install -r requirements.txt
+<img src="https://img.shields.io/github/last-commit/prajwal972/stegoforge?style=for-the-badge">
 
-python app.py
+</div>
 
-Open:
+---
 
-http://localhost:5000
+# 🌟 About StegoForge
 
-🎯 Project Objectives
+StegoForge is a **Secure Image Steganography Platform** developed using **Python**, **Flask**, **Pillow**, and **Modern Cryptography**.
 
-This project was developed to demonstrate the integration of:
+The application enables users to securely communicate by hiding secret messages inside images while using **Elliptic Curve Diffie-Hellman (ECDH)** for secure key exchange and authenticated access.
 
-Steganography
-Secure communication
-Cryptography
-Web application development
-Image processing
-Authentication systems
+It combines **Steganography**, **Cryptography**, and **Web Security** into one modern application.
 
-🔒 Security Features
+---
 
-Password-protected access
-Session management
-ECDH secure key exchange
-Public key fingerprint validation
-Protected message transmission through image steganography
+# 🚀 Key Features
+
+### 🔒 Secure Authentication
+
+- User Login System
+- Session Management
+- Protected Routes
+- Secure Access Control
+
+---
+
+### 🖼 Image Steganography
+
+- Hide Secret Messages
+- Extract Hidden Messages
+- Image Processing using Pillow
+- Lossless Message Embedding
+
+---
+
+### 🔑 Cryptography
+
+- Elliptic Curve Diffie-Hellman (ECDH)
+- Public Key Generation
+- Shared Secret Generation
+- Fingerprint Verification
+
+---
+
+### 🌐 Modern Web Application
+
+- Flask Backend
+- Responsive UI
+- Fast Image Processing
+- User Friendly Interface
+
+---
+
+# 🎯 Why StegoForge?
+
+Traditional messaging applications expose communication over networks.
+
+StegoForge enhances privacy by combining two security layers:
+
+✅ Cryptography
+
++
+
+✅ Steganography
+
+Instead of sending encrypted text directly, messages are first encrypted and then hidden inside an image, making the communication significantly harder to detect.
+
+---
+
+# 🏆 Project Highlights
+
+| Feature | Description |
+|----------|-------------|
+| 🔐 Authentication | Secure Login & Session Management |
+| 🖼 Steganography | Hide & Extract Secret Messages |
+| 🔑 ECDH | Secure Key Exchange |
+| 🛡 Security | Public Key Fingerprint Verification |
+| ⚡ Flask | Modern Python Web Application |
+| 🎨 UI | Responsive Interface |
+| 📷 Pillow | Image Processing |
+| 🔒 Cryptography | Secure Communication |
+
+---
+
+# 💻 Built With
+
+<p align="left">
+
+<img src="https://skillicons.dev/icons?i=python,flask,html,css,javascript,git,github,vscode"/>
+
+</p>
+
+### Libraries
+
+- Pillow (PIL)
+- Cryptography
+- Flask
+- Python Standard Library
+
+---
+
+# 📸 Project Preview
+
+> Replace these placeholder images after uploading screenshots to GitHub.
+
+<p align="center">
+
+<img src="assets/banner.png" width="900">
+
+</p>
+
+---
+
+# ✨ Application Preview
+
+| Login | Dashboard |
+|-------|-----------|
+| ![](assets/login.png) | ![](assets/home.png) |
+
+| Encode Message | Decode Message |
+|---------------|----------------|
+| ![](assets/encode.png) | ![](assets/decode.png) |
+
+| Key Exchange | Result |
+|--------------|--------|
+| ![](assets/keyexchange.png) | ![](assets/result.png) |
+
+---
