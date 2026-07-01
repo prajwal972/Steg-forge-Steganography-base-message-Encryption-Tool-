@@ -6,17 +6,6 @@
 
 <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=24&pause=1000&color=36BCF7&center=true&vCenter=true&width=700&lines=Hide+Secret+Messages+Inside+Images;Secure+Image+Communication;Elliptic+Curve+Diffie-Hellman+(ECDH);Python+%7C+Flask+%7C+Cryptography;Built+for+Cyber+Security+Projects" />
 
-<br>
-
-<img src="https://img.shields.io/github/license/prajwal972/stegoforge?style=for-the-badge&color=green">
-
-<img src="https://img.shields.io/github/stars/prajwal972/stegoforge?style=for-the-badge">
-
-<img src="https://img.shields.io/github/forks/prajwal972/stegoforge?style=for-the-badge">
-
-<img src="https://img.shields.io/github/issues/prajwal972/stegoforge?style=for-the-badge">
-
-<img src="https://img.shields.io/github/last-commit/prajwal972/stegoforge?style=for-the-badge">
 
 </div>
 
