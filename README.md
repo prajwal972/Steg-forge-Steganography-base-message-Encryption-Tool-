@@ -2,7 +2,6 @@
 
 # 🔐 StegoForge
 
-### Secure Image Steganography Platform
 
 <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=24&pause=1000&color=36BCF7&center=true&vCenter=true&width=700&lines=Hide+Secret+Messages+Inside+Images;Secure+Image+Communication;Elliptic+Curve+Diffie-Hellman+(ECDH);Python+%7C+Flask+%7C+Cryptography;Built+for+Cyber+Security+Projects" />
 
