@@ -1,6 +1,6 @@
 <div align="center">
 
-
+# 🔐 StegoForge
 
 ### Secure Image Steganography Platform
 
